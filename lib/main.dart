@@ -15,8 +15,21 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Твой кот',
       theme: appTheme(),
-      routes: routes,
       initialRoute: "/index",
+      onGenerateRoute: (settings) {
+        final builder = routes[settings.name];
+        if (builder == null) return null;
+        return MaterialPageRoute(
+          builder: (context) => Scaffold(
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: builder(context),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
