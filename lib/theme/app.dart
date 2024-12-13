@@ -40,5 +40,6 @@ ThemeData appTheme() {
       size: 32,
       color: Color(0xff008aff),
     ),
+    highlightColor: const Color(0xFF2A2727),
   );
 }
