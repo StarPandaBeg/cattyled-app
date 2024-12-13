@@ -43,5 +43,8 @@ ThemeData appTheme() {
       color: Color(0xff008aff),
     ),
     highlightColor: const Color(0xFF2A2727),
+    bottomSheetTheme: const BottomSheetThemeData(
+      backgroundColor: Color(0xFF1c1a1a),
+    ),
   );
 }

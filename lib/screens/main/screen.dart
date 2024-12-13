@@ -1,6 +1,7 @@
 import 'package:cattyled_app/screens/main/widgets/brightness_slider.dart';
 import 'package:cattyled_app/screens/main/widgets/header.dart';
 import 'package:cattyled_app/screens/main/widgets/mode_select.dart';
+import 'package:cattyled_app/screens/main/widgets/mode_sheet.dart';
 import 'package:cattyled_app/screens/main/widgets/status_bar.dart';
 import 'package:cattyled_app/widgets/lamp.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +42,14 @@ class ScreenMain extends StatelessWidget {
                     Expanded(
                       flex: 4,
                       child: ModeSelect(
-                        onTap: () {},
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            useSafeArea: true,
+                            isScrollControlled: true,
+                            builder: (context) => const ModeSheetContent(),
+                          );
+                        },
                       ),
                     )
                   ],
