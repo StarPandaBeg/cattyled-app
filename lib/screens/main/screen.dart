@@ -1,4 +1,6 @@
 import 'package:cattyled_app/screens/main/widgets/header.dart';
+import 'package:cattyled_app/screens/main/widgets/mode_select.dart';
+import 'package:cattyled_app/screens/main/widgets/status_bar.dart';
 import 'package:cattyled_app/widgets/lamp.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +29,26 @@ class ScreenMain extends StatelessWidget {
           const SizedBox(
             height: 40,
           ),
-          const SizedBox(),
+          Column(
+            children: [
+              IntrinsicHeight(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 65,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: ModeSelect(),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              const StatusBar(),
+            ],
+          ),
         ],
       ),
     );
