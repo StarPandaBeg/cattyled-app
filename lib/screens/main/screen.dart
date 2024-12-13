@@ -1,4 +1,4 @@
-import 'package:cattyled_app/screens/main/widgets/brightness_slider.dart';
+import 'package:cattyled_app/widgets/brightness_slider.dart';
 import 'package:cattyled_app/screens/main/widgets/header.dart';
 import 'package:cattyled_app/screens/main/widgets/mode_select.dart';
 import 'package:cattyled_app/screens/main/widgets/mode_sheet.dart';
