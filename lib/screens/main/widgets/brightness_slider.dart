@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
 
 class BrightnessSlider extends StatefulWidget {
+  final double initialValue;
   final Function(int, dynamic, dynamic)? onDragging;
 
-  const BrightnessSlider({super.key, this.onDragging});
+  const BrightnessSlider({super.key, this.onDragging, this.initialValue = 0});
 
   @override
   State<BrightnessSlider> createState() => _BrightnessSliderState();
@@ -12,6 +13,23 @@ class BrightnessSlider extends StatefulWidget {
 
 class _BrightnessSliderState extends State<BrightnessSlider> {
   double _value = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.initialValue;
+  }
+
+  @override
+  void didUpdateWidget(covariant BrightnessSlider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue &&
+        widget.initialValue != _value) {
+      setState(() {
+        _value = widget.initialValue;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
