@@ -1,3 +1,4 @@
+import 'package:cattyled_app/screens/main/widgets/brightness_slider.dart';
 import 'package:cattyled_app/screens/main/widgets/header.dart';
 import 'package:cattyled_app/screens/main/widgets/mode_select.dart';
 import 'package:cattyled_app/screens/main/widgets/status_bar.dart';
@@ -31,16 +32,17 @@ class ScreenMain extends StatelessWidget {
           ),
           Column(
             children: [
-              IntrinsicHeight(
+              SizedBox(
+                height: 170,
                 child: Row(
                   children: [
-                    Container(
-                      width: 65,
-                      color: Colors.white,
-                    ),
+                    const Expanded(child: BrightnessSlider()),
                     const SizedBox(width: 10),
-                    const Expanded(
-                      child: ModeSelect(),
+                    Expanded(
+                      flex: 4,
+                      child: ModeSelect(
+                        onTap: () {},
+                      ),
                     )
                   ],
                 ),

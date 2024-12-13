@@ -6,7 +6,9 @@ ThemeData appTheme() {
     fontFamily: "Montserrat",
     colorScheme: ColorScheme.fromSeed(
       seedColor: const Color(0xff008aff),
+      surface: const Color(0xff1f1f1f),
       primary: const Color(0xff008aff),
+      secondary: Colors.white,
       error: const Color(0xff800000),
     ),
     textTheme: const TextTheme(
