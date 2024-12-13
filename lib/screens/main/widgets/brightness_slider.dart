@@ -14,6 +14,9 @@ class BrightnessSlider extends StatefulWidget {
 class _BrightnessSliderState extends State<BrightnessSlider> {
   double _value = 0;
 
+  bool get _invertColors => _value > 25;
+  double get _iconRotationAngle => _value * 0.01;
+
   @override
   void initState() {
     super.initState();
@@ -66,7 +69,7 @@ class _BrightnessSliderState extends State<BrightnessSlider> {
               borderRadius: BorderRadius.circular(8),
               color: colorScheme.secondary,
             ),
-            activeTrackBarHeight: 100,
+            activeTrackBarHeight: double.infinity,
             inactiveTrackBar: BoxDecoration(color: colorScheme.surface),
           ),
           tooltip: FlutterSliderTooltip(
@@ -74,24 +77,26 @@ class _BrightnessSliderState extends State<BrightnessSlider> {
           ),
           handlerWidth: 0,
         ),
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Transform.rotate(
-                  angle: _value * 0.01,
-                  child: Icon(
-                    Icons.sunny,
-                    color: _value > 25
-                        ? colorScheme.surface
-                        : colorScheme.secondary,
-                    size: 20,
+        IgnorePointer(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Transform.rotate(
+                    angle: _iconRotationAngle,
+                    child: Icon(
+                      Icons.sunny,
+                      color: _invertColors
+                          ? colorScheme.surface
+                          : colorScheme.secondary,
+                      size: 20,
+                    ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ],
