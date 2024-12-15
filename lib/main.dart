@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Твой кот',
       theme: appTheme(),
-      initialRoute: "/index",
+      initialRoute: "/mqtt-test",
       onGenerateRoute: (settings) {
         final builder = routes[settings.name];
         if (builder == null) return null;
