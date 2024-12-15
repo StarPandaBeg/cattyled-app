@@ -1,8 +1,12 @@
+import 'package:cattyled_app/providers/index.dart';
 import 'package:cattyled_app/routes.dart';
 import 'package:cattyled_app/theme/app.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await setup();
+
   runApp(const MyApp());
 }
 
