@@ -1,12 +1,28 @@
 import 'package:cattyled_app/providers/index.dart';
 import 'package:cattyled_app/routes.dart';
 import 'package:cattyled_app/theme/app.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
+
+final appLogger = Logger("Application");
+
+void setupLogging() {
+  Logger.root.level = kDebugMode ? Level.ALL : Level.INFO;
+  Logger.root.onRecord.listen((record) {
+    // ignore: avoid_print
+    print(
+      '[${record.level.name}] (${record.loggerName}) ${record.time}: ${record.message}',
+    );
+  });
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  setupLogging();
   await setup();
 
+  appLogger.info("Setup complete. Running app");
   runApp(const MyApp());
 }
 
