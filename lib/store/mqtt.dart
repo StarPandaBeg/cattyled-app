@@ -1,3 +1,4 @@
+import 'package:cattyled_app/api/commands.dart';
 import 'package:cattyled_app/repository/connection.dart';
 import 'package:cattyled_app/repository/mqtt.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,12 @@ class _MqttConnectEvent extends MqttEvent {
   final bool state;
 
   _MqttConnectEvent({required this.state});
+}
+
+class MqttCommandEvent extends MqttEvent {
+  final Command command;
+
+  MqttCommandEvent(this.command);
 }
 
 class MqttState {
@@ -46,6 +53,12 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
     on<_MqttConnectEvent>(
       (event, emit) {
         emit(state.copyWith(isConnected: event.state));
+      },
+    );
+    on<MqttCommandEvent>(
+      (event, emit) {
+        final command = event.command;
+        command.execute(_mqttRepo);
       },
     );
   }
