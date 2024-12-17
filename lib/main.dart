@@ -1,8 +1,10 @@
 import 'package:cattyled_app/providers/index.dart';
 import 'package:cattyled_app/routes.dart';
+import 'package:cattyled_app/store/mqtt.dart';
 import 'package:cattyled_app/theme/app.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
 final appLogger = Logger("Application");
@@ -42,9 +44,12 @@ class MyApp extends StatelessWidget {
         return MaterialPageRoute(
           builder: (context) => Scaffold(
             body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: builder(context),
+              child: BlocProvider(
+                create: (_) => MqttBloc(),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: builder(context),
+                ),
               ),
             ),
           ),
