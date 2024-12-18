@@ -46,6 +46,7 @@ class CommandColor extends Command {
 
     final command = _buildCommand([4, hue, saturation, value]);
     repository.send(command);
+    addEvent(MqttColorEvent(value: color));
   }
 }
 

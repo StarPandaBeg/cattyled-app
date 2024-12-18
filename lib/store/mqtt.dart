@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cattyled_app/api/commands.dart';
 import 'package:cattyled_app/repository/connection.dart';
 import 'package:cattyled_app/repository/mqtt.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:typed_data/typed_data.dart';
@@ -25,27 +26,40 @@ class MqttPowerEvent extends MqttEvent {
   }
 }
 
+class MqttColorEvent extends MqttEvent {
+  final Color value;
+
+  MqttColorEvent({required this.value});
+
+  factory MqttColorEvent.fromList(List<String> values) {
+    final hue = int.parse(values[0]) / 255 * 360;
+    final saturation = int.parse(values[1]) / 255;
+    final value = int.parse(values[2]) / 255;
+    final color = HSVColor.fromAHSV(1, hue, saturation, value);
+    return MqttColorEvent(value: color.toColor());
+  }
+}
+
 class MqttSyncEvent extends MqttEvent {
   final bool power;
-  final int hue;
-  final int saturation;
-  final int value;
+  final Color color;
   final LampMode mode;
 
   MqttSyncEvent({
     required this.power,
-    required this.hue,
-    required this.saturation,
-    required this.value,
+    required this.color,
     required this.mode,
   });
 
   factory MqttSyncEvent.fromList(List<String> values) {
+    final hue = int.parse(values[1]) / 255 * 360;
+    final saturation = int.parse(values[2]) / 255;
+    final value = int.parse(values[3]) / 255;
+    final color = HSVColor.fromAHSV(1, hue, saturation, value);
+
     return MqttSyncEvent(
       power: values[0] == "1",
-      hue: int.parse(values[1]),
-      saturation: int.parse(values[2]),
-      value: int.parse(values[3]),
+      color: color.toColor(),
       mode: LampMode.values[int.parse(values[4])],
     );
   }
@@ -60,18 +74,32 @@ class MqttCommandEvent extends MqttEvent {
 class MqttState {
   final bool isConnected;
   final bool isEnabled;
+  final Color color;
 
-  MqttState({required this.isConnected, required this.isEnabled});
+  MqttState({
+    required this.isConnected,
+    required this.isEnabled,
+    required this.color,
+  });
 
-  MqttState copyWith({bool? isConnected, bool? isEnabled}) {
+  MqttState copyWith({
+    bool? isConnected,
+    bool? isEnabled,
+    Color? color,
+  }) {
     return MqttState(
       isConnected: isConnected ?? this.isConnected,
       isEnabled: isEnabled ?? this.isEnabled,
+      color: color ?? this.color,
     );
   }
 
   factory MqttState.initial() {
-    return MqttState(isConnected: false, isEnabled: false);
+    return MqttState(
+      isConnected: false,
+      isEnabled: false,
+      color: const Color(0xffff0000),
+    );
   }
 }
 
@@ -128,10 +156,16 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
         emit(state.copyWith(isEnabled: event.value));
       },
     );
+    on<MqttColorEvent>(
+      (event, emit) {
+        emit(state.copyWith(color: event.value));
+      },
+    );
     on<MqttSyncEvent>(
       (event, emit) {
         add(MqttPowerEvent(value: event.power));
-        // TODO: sync color & mode
+        add(MqttColorEvent(value: event.color));
+        // TODO: sync mode
       },
     );
   }
@@ -220,6 +254,7 @@ class _MqttCommandParser {
   MqttEvent? _mapCommonEvents(int type, List<String> args) {
     return switch (type) {
       3 => MqttPowerEvent.fromList(args),
+      4 => MqttColorEvent.fromList(args),
       _ => null,
     };
   }
