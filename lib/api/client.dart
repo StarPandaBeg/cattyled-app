@@ -31,6 +31,7 @@ class MqttClient {
 
   Future<void> connect() async {
     try {
+      logger.fine("Connecting to MQTT server");
       await _client.connect(_config.mqttUser, _config.mqttPassword);
       _isConnected.value = true;
     } catch (e) {
@@ -41,6 +42,7 @@ class MqttClient {
 
   Future<void> disconnect() async {
     try {
+      logger.fine("Disconnecting from MQTT server");
       _client.disconnect();
       _isConnected.value = false;
     } catch (e) {
@@ -55,6 +57,7 @@ class MqttClient {
   }) {
     if (isStatusConnected) {
       try {
+        logger.fine("Sending message to $topic");
         _client.publishMessage(topic, MqttQos.atLeastOnce, data);
       } catch (e) {
         logger.warning("Failed to send MQTT message", [e]);
@@ -62,12 +65,14 @@ class MqttClient {
       return;
     }
     if (keepAfterDisconnect) {
+      logger.fine("Caching message to $topic");
       final message = _MqttMessage(topic: topic, message: data);
       _pendingMessages.add(message);
     }
   }
 
   Subscription? subscribe(String topic, {MqttQos qos = MqttQos.atLeastOnce}) {
+    logger.fine("Subscribing to $topic");
     return _client.subscribe(topic, qos);
   }
 
@@ -75,6 +80,7 @@ class MqttClient {
     final queue = Queue.from(_pendingMessages);
     while (queue.isNotEmpty) {
       final message = _pendingMessages.removeFirst();
+      logger.fine("Restore message to ${message.topic} from cache");
       send(message.topic, message.message, keepAfterDisconnect: true);
     }
   }

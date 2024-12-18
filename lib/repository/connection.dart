@@ -43,6 +43,7 @@ class ConnectionRepository {
   }
 
   void _onConnectionStatusChange(List<ConnectivityResult> state) {
+    logger.fine("Status changed: ${state.join("; ")}");
     _isConnected.value = state.indexWhere(_connectedStatuses.contains) != -1;
   }
 }
