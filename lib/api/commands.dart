@@ -59,6 +59,7 @@ class CommandMode extends Command {
   void execute(MqttRepository repository, void Function(MqttEvent) addEvent) {
     final command = _buildCommand([5, mode.index]);
     repository.send(command);
+    addEvent(MqttModeEvent(value: mode));
   }
 }
 

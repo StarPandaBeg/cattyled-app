@@ -22,6 +22,9 @@ class ScreenMqttTest extends StatelessWidget {
           BlocBuilder<MqttBloc, MqttState>(
             builder: (context, state) => Text(state.color.toString()),
           ),
+          BlocBuilder<MqttBloc, MqttState>(
+            builder: (context, state) => Text(state.mode.toString()),
+          ),
           ElevatedButton(
             onPressed: () {
               final store = context.read<MqttBloc>();
