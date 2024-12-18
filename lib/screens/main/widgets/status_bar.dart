@@ -1,29 +1,34 @@
+import 'package:cattyled_app/store/mqtt.dart';
 import 'package:cattyled_app/widgets/status_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class StatusBar extends StatelessWidget {
   const StatusBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
-      margin: EdgeInsets.all(0),
+    return Card(
+      margin: const EdgeInsets.all(0),
       child: Padding(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(),
-            Row(
-              children: [
-                StatusIcon(Icons.cloud_sync),
-                SizedBox(width: 5),
-                StatusIcon(Icons.wifi),
-                SizedBox(width: 5),
-                StatusIcon(Icons.cloud),
-              ],
+            const SizedBox(),
+            BlocBuilder<MqttBloc, MqttState>(
+              builder: (context, state) => Row(
+                children: [
+                  StatusIcon(Icons.cloud_sync),
+                  const SizedBox(width: 5),
+                  StatusIcon(
+                    Icons.cloud,
+                    enabled: state.isConnected && state.isRemoteActive,
+                  ),
+                ],
+              ),
             ),
-            SizedBox(),
+            const SizedBox(),
           ],
         ),
       ),
