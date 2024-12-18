@@ -6,6 +6,33 @@ import 'package:typed_data/typed_data.dart';
 
 enum LampMode { classic, rainbow, glow, pulse, fire, lights }
 
+final Map<LampMode, Map<String, dynamic>> lampModes = {
+  LampMode.classic: {
+    "name": "Классика",
+    "icon": Icons.light,
+  },
+  LampMode.rainbow: {
+    "name": "Радуга",
+    "icon": Icons.looks,
+  },
+  LampMode.glow: {
+    "name": "Сияние",
+    "icon": Icons.auto_awesome,
+  },
+  LampMode.pulse: {
+    "name": "Пульс",
+    "icon": Icons.favorite,
+  },
+  LampMode.fire: {
+    "name": "Пламя",
+    "icon": Icons.local_fire_department,
+  },
+  LampMode.lights: {
+    "name": "Праздник",
+    "icon": Icons.celebration,
+  },
+};
+
 abstract class Command {
   void execute(MqttRepository repository, void Function(MqttEvent) addEvent);
 

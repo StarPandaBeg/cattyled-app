@@ -1,10 +1,13 @@
-import 'package:cattyled_app/widgets/brightness_slider.dart';
+import 'package:cattyled_app/api/commands.dart';
 import 'package:cattyled_app/screens/main/widgets/header.dart';
 import 'package:cattyled_app/screens/main/widgets/mode_select.dart';
 import 'package:cattyled_app/screens/main/widgets/mode_sheet.dart';
 import 'package:cattyled_app/screens/main/widgets/status_bar.dart';
+import 'package:cattyled_app/store/mqtt.dart';
+import 'package:cattyled_app/widgets/brightness_slider.dart';
 import 'package:cattyled_app/widgets/lamp.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ScreenMain extends StatelessWidget {
   const ScreenMain({super.key});
@@ -39,17 +42,22 @@ class ScreenMain extends StatelessWidget {
                   children: [
                     const Expanded(child: BrightnessSlider()),
                     const SizedBox(width: 10),
-                    Expanded(
-                      flex: 4,
-                      child: ModeSelect(
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            useSafeArea: true,
-                            isScrollControlled: true,
-                            builder: (context) => const ModeSheetContent(),
-                          );
-                        },
+                    BlocBuilder<MqttBloc, MqttState>(
+                      buildWhen: (previous, current) {
+                        if (previous.isConnected != current.isConnected) {
+                          return true;
+                        }
+                        if (previous.mode != current.mode) return true;
+                        return false;
+                      },
+                      builder: (context, state) => Expanded(
+                        flex: 4,
+                        child: ModeSelect(
+                          mode: state.mode,
+                          onTap: state.isConnected
+                              ? () => _onModeChangeTap(context, state.mode)
+                              : null,
+                        ),
                       ),
                     )
                   ],
@@ -60,6 +68,23 @@ class ScreenMain extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _onModeChangeTap(BuildContext context, LampMode initial) {
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
+      builder: (modalContext) => ModeSheetContent(
+        initial: initial,
+        onModeChange: (mode) {
+          final store = context.read<MqttBloc>();
+          store.add(
+            MqttCommandEvent(CommandMode(mode: mode)),
+          );
+        },
       ),
     );
   }

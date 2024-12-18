@@ -1,14 +1,21 @@
+import 'package:cattyled_app/api/commands.dart';
 import 'package:flutter/material.dart';
 
 class ModeSelect extends StatelessWidget {
   final VoidCallback? onTap;
+  final LampMode mode;
 
-  const ModeSelect({super.key, this.onTap});
+  const ModeSelect({
+    super.key,
+    required this.mode,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
+    final modeData = lampModes[mode]!;
 
     return Card(
       margin: const EdgeInsets.all(0),
@@ -23,15 +30,15 @@ class ModeSelect extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
-                Icons.light,
+              Icon(
+                modeData["icon"],
                 size: 48,
               ),
               const SizedBox(
                 height: 15,
               ),
               Text(
-                "Классика",
+                modeData["name"],
                 style: textTheme.headlineLarge,
               ),
               Text(
