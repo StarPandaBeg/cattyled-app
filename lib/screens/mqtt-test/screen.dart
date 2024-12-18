@@ -108,6 +108,13 @@ class ScreenMqttTest extends StatelessWidget {
             },
             child: const Text("Sync"),
           ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, "/index");
+            },
+            child: const Text("Go to App"),
+          ),
         ],
       ),
     );
