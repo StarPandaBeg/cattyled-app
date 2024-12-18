@@ -80,6 +80,7 @@ class CommandBrightness extends Command {
   void execute(MqttRepository repository, void Function(MqttEvent) addEvent) {
     final command = _buildCommand([7, brightness]);
     repository.send(command);
+    addEvent(MqttBrightnessEvent(value: brightness));
   }
 }
 
@@ -102,7 +103,7 @@ class CommandSyncRequest extends Command {
 class CommandBrightnessRequest extends Command {
   @override
   void execute(MqttRepository repository, void Function(MqttEvent) addEvent) {
-    final command = _buildCommand([2]);
+    final command = _buildCommand([8]);
     repository.send(command);
   }
 }

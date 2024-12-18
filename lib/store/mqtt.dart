@@ -50,6 +50,16 @@ class MqttModeEvent extends MqttEvent {
   }
 }
 
+class MqttBrightnessEvent extends MqttEvent {
+  final int value;
+
+  MqttBrightnessEvent({required this.value});
+
+  factory MqttBrightnessEvent.fromList(List<String> values) {
+    return MqttBrightnessEvent(value: int.parse(values[0]));
+  }
+}
+
 class MqttSyncEvent extends MqttEvent {
   final bool power;
   final Color color;
@@ -86,12 +96,14 @@ class MqttState {
   final bool isEnabled;
   final Color color;
   final LampMode mode;
+  final int brightness;
 
   MqttState({
     required this.isConnected,
     required this.isEnabled,
     required this.color,
     required this.mode,
+    required this.brightness,
   });
 
   MqttState copyWith({
@@ -99,12 +111,14 @@ class MqttState {
     bool? isEnabled,
     Color? color,
     LampMode? mode,
+    int? brightness,
   }) {
     return MqttState(
       isConnected: isConnected ?? this.isConnected,
       isEnabled: isEnabled ?? this.isEnabled,
       color: color ?? this.color,
       mode: mode ?? this.mode,
+      brightness: brightness ?? this.brightness,
     );
   }
 
@@ -114,6 +128,7 @@ class MqttState {
       isEnabled: false,
       color: const Color(0xffff0000),
       mode: LampMode.classic,
+      brightness: 0,
     );
   }
 }
@@ -157,6 +172,7 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
 
         if (event.state) {
           add(MqttCommandEvent(CommandSyncRequest()));
+          add(MqttCommandEvent(CommandBrightnessRequest()));
         }
       },
     );
@@ -179,6 +195,11 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
     on<MqttModeEvent>(
       (event, emit) {
         emit(state.copyWith(mode: event.value));
+      },
+    );
+    on<MqttBrightnessEvent>(
+      (event, emit) {
+        emit(state.copyWith(brightness: event.value));
       },
     );
     on<MqttSyncEvent>(
@@ -261,6 +282,7 @@ class _MqttCommandParser {
 
     return switch (type) {
       1 => MqttSyncEvent.fromList(args),
+      7 => MqttBrightnessEvent.fromList(args),
       _ => null,
     };
   }

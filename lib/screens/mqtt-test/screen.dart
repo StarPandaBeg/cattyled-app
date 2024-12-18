@@ -25,6 +25,10 @@ class ScreenMqttTest extends StatelessWidget {
           BlocBuilder<MqttBloc, MqttState>(
             builder: (context, state) => Text(state.mode.toString()),
           ),
+          BlocBuilder<MqttBloc, MqttState>(
+            builder: (context, state) =>
+                Text("Brightness: ${state.brightness}"),
+          ),
           ElevatedButton(
             onPressed: () {
               final store = context.read<MqttBloc>();
@@ -96,6 +100,7 @@ class ScreenMqttTest extends StatelessWidget {
             onPressed: () {
               final store = context.read<MqttBloc>();
               store.add(MqttCommandEvent(CommandSyncRequest()));
+              store.add(MqttCommandEvent(CommandBrightnessRequest()));
             },
             child: const Text("Sync"),
           ),
