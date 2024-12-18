@@ -1,10 +1,10 @@
 import 'package:cattyled_app/api/commands.dart';
+import 'package:cattyled_app/screens/main/widgets/brightness_slider.dart';
 import 'package:cattyled_app/screens/main/widgets/header.dart';
 import 'package:cattyled_app/screens/main/widgets/mode_select.dart';
 import 'package:cattyled_app/screens/main/widgets/mode_sheet.dart';
 import 'package:cattyled_app/screens/main/widgets/status_bar.dart';
 import 'package:cattyled_app/store/mqtt.dart';
-import 'package:cattyled_app/widgets/brightness_slider.dart';
 import 'package:cattyled_app/widgets/lamp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,7 +40,21 @@ class ScreenMain extends StatelessWidget {
                 height: 170,
                 child: Row(
                   children: [
-                    const Expanded(child: BrightnessSlider()),
+                    Expanded(
+                      child: BlocBuilder<MqttBloc, MqttState>(
+                        builder: (context, state) => DebouncedBrightnessSlider(
+                          initial: state.brightness.toDouble(),
+                          onChange: (value) {
+                            final store = context.read<MqttBloc>();
+                            store.add(
+                              MqttCommandEvent(
+                                CommandBrightness(brightness: value.toInt()),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
                     const SizedBox(width: 10),
                     BlocBuilder<MqttBloc, MqttState>(
                       buildWhen: (previous, current) {
