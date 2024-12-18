@@ -180,6 +180,7 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
 
   @override
   Future<void> close() async {
+    _periodicTimer?.cancel();
     _localMessageSubscription.cancel();
     _remoteMessageSubscription.cancel();
     _connRepo.isConnectedNotifier
