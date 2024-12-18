@@ -60,6 +60,20 @@ class MqttBrightnessEvent extends MqttEvent {
   }
 }
 
+class MqttStatusEvent extends MqttEvent {
+  final int brightness;
+  final bool isRemoteActive;
+
+  MqttStatusEvent({required this.brightness, required this.isRemoteActive});
+
+  factory MqttStatusEvent.fromList(List<String> values) {
+    return MqttStatusEvent(
+      brightness: int.parse(values[0]),
+      isRemoteActive: values[2] == "1",
+    );
+  }
+}
+
 class MqttSyncEvent extends MqttEvent {
   final bool power;
   final Color color;
@@ -97,6 +111,7 @@ class MqttState {
   final Color color;
   final LampMode mode;
   final int brightness;
+  final bool isRemoteActive;
 
   MqttState({
     required this.isConnected,
@@ -104,6 +119,7 @@ class MqttState {
     required this.color,
     required this.mode,
     required this.brightness,
+    required this.isRemoteActive,
   });
 
   MqttState copyWith({
@@ -112,6 +128,7 @@ class MqttState {
     Color? color,
     LampMode? mode,
     int? brightness,
+    bool? isRemoteActive,
   }) {
     return MqttState(
       isConnected: isConnected ?? this.isConnected,
@@ -119,6 +136,7 @@ class MqttState {
       color: color ?? this.color,
       mode: mode ?? this.mode,
       brightness: brightness ?? this.brightness,
+      isRemoteActive: isRemoteActive ?? this.isRemoteActive,
     );
   }
 
@@ -129,6 +147,7 @@ class MqttState {
       color: const Color(0xffff0000),
       mode: LampMode.classic,
       brightness: 0,
+      isRemoteActive: false,
     );
   }
 }
@@ -143,16 +162,19 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
   late final StreamSubscription<Uint8Buffer> _localMessageSubscription;
   late final StreamSubscription<Uint8Buffer> _remoteMessageSubscription;
 
+  Timer? _periodicTimer;
+  DateTime _lastUpdateTime = DateTime.now();
+
   MqttBloc() : super(MqttState.initial()) {
     _setupNativeConnectionListener();
     _setupActualConnectionListener();
     _setupEventListeners();
 
     _localMessageSubscription = _mqttRepo.localMessages.listen(
-      (p) => parseEvent(_parser.mapLocalCommandToEvent, p),
+      (p) => _parseEvent(_parser.mapLocalCommandToEvent, p),
     );
     _remoteMessageSubscription = _mqttRepo.remoteMessages.listen(
-      (p) => parseEvent(_parser.mapRemoteCommandToEvent, p),
+      (p) => _parseEvent(_parser.mapRemoteCommandToEvent, p),
     );
   }
 
@@ -166,13 +188,23 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
   }
 
   void _setupEventListeners() {
+    on<MqttEvent>(
+      (event, emit) {
+        _lastUpdateTime = DateTime.now();
+      },
+    );
     on<_MqttConnectEvent>(
       (event, emit) {
         emit(state.copyWith(isConnected: event.state));
 
         if (event.state) {
-          add(MqttCommandEvent(CommandSyncRequest()));
-          add(MqttCommandEvent(CommandBrightnessRequest()));
+          _requestUpdate();
+          _setupPeriodicUpdate();
+        } else {
+          if (_periodicTimer != null) {
+            _periodicTimer!.cancel();
+            _periodicTimer = null;
+          }
         }
       },
     );
@@ -200,6 +232,14 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
     on<MqttBrightnessEvent>(
       (event, emit) {
         emit(state.copyWith(brightness: event.value));
+      },
+    );
+    on<MqttStatusEvent>(
+      (event, emit) {
+        emit(state.copyWith(
+          brightness: event.brightness,
+          isRemoteActive: event.isRemoteActive,
+        ));
       },
     );
     on<MqttSyncEvent>(
@@ -240,13 +280,28 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
     add(_MqttConnectEvent(state: state));
   }
 
-  void parseEvent(
+  void _parseEvent(
     MqttEvent? Function(Uint8Buffer) onData,
     Uint8Buffer payload,
   ) {
     final event = onData(payload);
     if (event == null) return;
     add(event);
+  }
+
+  void _setupPeriodicUpdate() {
+    const period = Duration(seconds: 10);
+    _periodicTimer = Timer.periodic(period, (_) {
+      final timeSinceInteraction = DateTime.now().difference(_lastUpdateTime);
+      final statusOnly = timeSinceInteraction.inSeconds < 20;
+      _requestUpdate(statusOnly: statusOnly);
+    });
+  }
+
+  void _requestUpdate({bool statusOnly = false}) {
+    logger.fine("Requesting update");
+    if (!statusOnly) add(MqttCommandEvent(CommandSyncRequest()));
+    add(MqttCommandEvent(CommandStatusRequest()));
   }
 }
 
@@ -283,6 +338,7 @@ class _MqttCommandParser {
     return switch (type) {
       1 => MqttSyncEvent.fromList(args),
       7 => MqttBrightnessEvent.fromList(args),
+      8 => MqttStatusEvent.fromList(args),
       _ => null,
     };
   }

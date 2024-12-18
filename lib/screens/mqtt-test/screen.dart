@@ -20,6 +20,10 @@ class ScreenMqttTest extends StatelessWidget {
                 Text(state.isEnabled ? "Enabled" : "Disabled"),
           ),
           BlocBuilder<MqttBloc, MqttState>(
+            builder: (context, state) =>
+                Text("Remote: ${state.isRemoteActive ? "Online" : "Offline"}"),
+          ),
+          BlocBuilder<MqttBloc, MqttState>(
             builder: (context, state) => Text(state.color.toString()),
           ),
           BlocBuilder<MqttBloc, MqttState>(
@@ -100,7 +104,7 @@ class ScreenMqttTest extends StatelessWidget {
             onPressed: () {
               final store = context.read<MqttBloc>();
               store.add(MqttCommandEvent(CommandSyncRequest()));
-              store.add(MqttCommandEvent(CommandBrightnessRequest()));
+              store.add(MqttCommandEvent(CommandStatusRequest()));
             },
             child: const Text("Sync"),
           ),

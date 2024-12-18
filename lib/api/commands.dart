@@ -100,10 +100,10 @@ class CommandSyncRequest extends Command {
   }
 }
 
-class CommandBrightnessRequest extends Command {
+class CommandStatusRequest extends Command {
   @override
   void execute(MqttRepository repository, void Function(MqttEvent) addEvent) {
     final command = _buildCommand([8]);
-    repository.send(command);
+    repository.sendToLocal(command);
   }
 }
