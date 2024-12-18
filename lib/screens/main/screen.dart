@@ -42,7 +42,17 @@ class ScreenMain extends StatelessWidget {
                   children: [
                     Expanded(
                       child: BlocBuilder<MqttBloc, MqttState>(
+                        buildWhen: (previous, current) {
+                          if (previous.isConnected != current.isConnected) {
+                            return true;
+                          }
+                          if (previous.brightness != current.brightness) {
+                            return true;
+                          }
+                          return false;
+                        },
                         builder: (context, state) => DebouncedBrightnessSlider(
+                          disabled: !state.isConnected,
                           initial: state.brightness.toDouble(),
                           onChange: (value) {
                             final store = context.read<MqttBloc>();

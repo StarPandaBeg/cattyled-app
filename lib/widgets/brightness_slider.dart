@@ -4,8 +4,13 @@ import 'package:flutter_xlider/flutter_xlider.dart';
 class BrightnessSlider extends StatefulWidget {
   final double initialValue;
   final Function(int, dynamic, dynamic)? onDragging;
+  final bool disabled;
 
-  const BrightnessSlider({super.key, this.onDragging, this.initialValue = 0});
+  const BrightnessSlider(
+      {super.key,
+      this.onDragging,
+      this.initialValue = 0,
+      this.disabled = false});
 
   @override
   State<BrightnessSlider> createState() => _BrightnessSliderState();
@@ -47,6 +52,7 @@ class _BrightnessSliderState extends State<BrightnessSlider> {
           max: 255,
           axis: Axis.vertical,
           rtl: true,
+          disabled: widget.disabled,
           onDragging: (handlerIndex, lowerValue, upperValue) {
             setState(() {
               _value = lowerValue;
@@ -71,6 +77,7 @@ class _BrightnessSliderState extends State<BrightnessSlider> {
             ),
             activeTrackBarHeight: double.infinity,
             inactiveTrackBar: BoxDecoration(color: colorScheme.surface),
+            inactiveDisabledTrackBarColor: colorScheme.surface,
           ),
           tooltip: FlutterSliderTooltip(
             disabled: true,
