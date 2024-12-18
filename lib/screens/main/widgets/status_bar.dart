@@ -17,9 +17,16 @@ class StatusBar extends StatelessWidget {
           children: [
             const SizedBox(),
             BlocBuilder<MqttBloc, MqttState>(
+              buildWhen: (previous, current) {
+                if (previous.isConnected != current.isConnected) return true;
+                if (previous.isRemoteActive != current.isRemoteActive) {
+                  return true;
+                }
+                return false;
+              },
               builder: (context, state) => Row(
                 children: [
-                  StatusIcon(Icons.cloud_sync),
+                  const StatusIcon(Icons.cloud_sync),
                   const SizedBox(width: 5),
                   StatusIcon(
                     Icons.cloud,
