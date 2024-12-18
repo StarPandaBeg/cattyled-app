@@ -66,3 +66,39 @@ class CommandWink extends Command {
     repository.send(command);
   }
 }
+
+class CommandBrightness extends Command {
+  final int brightness;
+
+  CommandBrightness({required this.brightness});
+
+  @override
+  void execute(MqttRepository repository) {
+    final command = _buildCommand([7, brightness]);
+    repository.send(command);
+  }
+}
+
+class CommandPing extends Command {
+  @override
+  void execute(MqttRepository repository) {
+    final command = _buildCommand([0]);
+    repository.send(command);
+  }
+}
+
+class CommandSyncRequest extends Command {
+  @override
+  void execute(MqttRepository repository) {
+    final command = _buildCommand([2]);
+    repository.send(command);
+  }
+}
+
+class CommandBrightnessRequest extends Command {
+  @override
+  void execute(MqttRepository repository) {
+    final command = _buildCommand([2]);
+    repository.send(command);
+  }
+}

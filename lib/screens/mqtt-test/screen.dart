@@ -68,6 +68,20 @@ class ScreenMqttTest extends StatelessWidget {
             },
             child: const Text("Do Wink"),
           ),
+          ElevatedButton(
+            onPressed: () {
+              final store = context.read<MqttBloc>();
+              store.add(MqttCommandEvent(CommandBrightness(brightness: 255)));
+            },
+            child: const Text("Set Full Brightness"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final store = context.read<MqttBloc>();
+              store.add(MqttCommandEvent(CommandBrightness(brightness: 127)));
+            },
+            child: const Text("Set Half Brightness"),
+          ),
         ],
       ),
     );
