@@ -25,6 +25,32 @@ class MqttPowerEvent extends MqttEvent {
   }
 }
 
+class MqttSyncEvent extends MqttEvent {
+  final bool power;
+  final int hue;
+  final int saturation;
+  final int value;
+  final LampMode mode;
+
+  MqttSyncEvent({
+    required this.power,
+    required this.hue,
+    required this.saturation,
+    required this.value,
+    required this.mode,
+  });
+
+  factory MqttSyncEvent.fromList(List<String> values) {
+    return MqttSyncEvent(
+      power: values[0] == "1",
+      hue: int.parse(values[1]),
+      saturation: int.parse(values[2]),
+      value: int.parse(values[3]),
+      mode: LampMode.values[int.parse(values[4])],
+    );
+  }
+}
+
 class MqttCommandEvent extends MqttEvent {
   final Command command;
 
@@ -85,6 +111,10 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
     on<_MqttConnectEvent>(
       (event, emit) {
         emit(state.copyWith(isConnected: event.state));
+
+        if (event.state) {
+          add(MqttCommandEvent(CommandSyncRequest()));
+        }
       },
     );
     on<MqttCommandEvent>(
@@ -96,6 +126,12 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
     on<MqttPowerEvent>(
       (event, emit) {
         emit(state.copyWith(isEnabled: event.value));
+      },
+    );
+    on<MqttSyncEvent>(
+      (event, emit) {
+        add(MqttPowerEvent(value: event.power));
+        // TODO: sync color & mode
       },
     );
   }
@@ -170,6 +206,7 @@ class _MqttCommandParser {
     if (command != null) return command;
 
     return switch (type) {
+      1 => MqttSyncEvent.fromList(args),
       _ => null,
     };
   }

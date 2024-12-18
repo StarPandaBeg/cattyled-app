@@ -93,7 +93,7 @@ class CommandSyncRequest extends Command {
   @override
   void execute(MqttRepository repository, void Function(MqttEvent) addEvent) {
     final command = _buildCommand([2]);
-    repository.send(command);
+    repository.sendToLocal(command);
   }
 }
 
