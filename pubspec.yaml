@@ -19,6 +19,7 @@ dependencies:
   connectivity_plus: ^6.1.1
   typed_data: ^1.4.0
   flutter_bloc: ^8.1.6
+  async: ^2.11.0
 
 dev_dependencies:
   flutter_test:

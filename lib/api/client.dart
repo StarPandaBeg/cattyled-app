@@ -8,6 +8,8 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:typed_data/typed_data.dart';
 
+typedef MqttMessageList = List<MqttReceivedMessage<MqttMessage>>;
+
 class MqttClient {
   static final logger = Logger("MqttClient");
 
@@ -19,6 +21,7 @@ class MqttClient {
   ValueListenable<bool> get isConnected => _isConnected;
   bool get isStatusConnected =>
       _client.connectionStatus?.state == MqttConnectionState.connected;
+  Stream<MqttMessageList>? get updatesStream => _client.updates;
 
   MqttClient(Config config) : _config = config {
     _client = MqttServerClient.withPort(config.mqttHost, "", config.mqttPort)
