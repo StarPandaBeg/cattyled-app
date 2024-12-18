@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:cattyled_app/api/commands.dart';
 import 'package:cattyled_app/repository/connection.dart';
 import 'package:cattyled_app/repository/mqtt.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
+import 'package:typed_data/typed_data.dart';
 
 abstract class MqttEvent {}
 
@@ -10,6 +13,16 @@ class _MqttConnectEvent extends MqttEvent {
   final bool state;
 
   _MqttConnectEvent({required this.state});
+}
+
+class MqttPowerEvent extends MqttEvent {
+  final bool value;
+
+  MqttPowerEvent({required this.value});
+
+  factory MqttPowerEvent.fromList(List<String> values) {
+    return MqttPowerEvent(value: values[0] == "1");
+  }
 }
 
 class MqttCommandEvent extends MqttEvent {
@@ -20,13 +33,19 @@ class MqttCommandEvent extends MqttEvent {
 
 class MqttState {
   final bool isConnected;
+  final bool isEnabled;
 
-  MqttState({required this.isConnected});
+  MqttState({required this.isConnected, required this.isEnabled});
 
-  MqttState copyWith({bool? isConnected}) {
+  MqttState copyWith({bool? isConnected, bool? isEnabled}) {
     return MqttState(
       isConnected: isConnected ?? this.isConnected,
+      isEnabled: isEnabled ?? this.isEnabled,
     );
+  }
+
+  factory MqttState.initial() {
+    return MqttState(isConnected: false, isEnabled: false);
   }
 }
 
@@ -35,15 +54,28 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
 
   final _mqttRepo = MqttRepository();
   final _connRepo = ConnectionRepository();
+  final _parser = _MqttCommandParser();
 
-  MqttBloc() : super(MqttState(isConnected: false)) {
+  late final StreamSubscription<Uint8Buffer> _localMessageSubscription;
+  late final StreamSubscription<Uint8Buffer> _remoteMessageSubscription;
+
+  MqttBloc() : super(MqttState.initial()) {
     _setupNativeConnectionListener();
     _setupActualConnectionListener();
     _setupEventListeners();
+
+    _localMessageSubscription = _mqttRepo.localMessages.listen(
+      (p) => parseEvent(_parser.mapLocalCommandToEvent, p),
+    );
+    _remoteMessageSubscription = _mqttRepo.remoteMessages.listen(
+      (p) => parseEvent(_parser.mapRemoteCommandToEvent, p),
+    );
   }
 
   @override
   Future<void> close() async {
+    _localMessageSubscription.cancel();
+    _remoteMessageSubscription.cancel();
     _connRepo.isConnectedNotifier
         .removeListener(_onNativeConnectionStatusChange);
     return super.close();
@@ -58,7 +90,12 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
     on<MqttCommandEvent>(
       (event, emit) {
         final command = event.command;
-        command.execute(_mqttRepo);
+        command.execute(_mqttRepo, add);
+      },
+    );
+    on<MqttPowerEvent>(
+      (event, emit) {
+        emit(state.copyWith(isEnabled: event.value));
       },
     );
   }
@@ -90,5 +127,63 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
   void _onActualConnectionStatusChange() {
     final state = _mqttRepo.isConnected;
     add(_MqttConnectEvent(state: state));
+  }
+
+  void parseEvent(
+    MqttEvent? Function(Uint8Buffer) onData,
+    Uint8Buffer payload,
+  ) {
+    final event = onData(payload);
+    if (event == null) return;
+    add(event);
+  }
+}
+
+class _MqttCommandParser {
+  static final logger = Logger("MqttCommandParser");
+
+  MqttEvent? mapLocalCommandToEvent(Uint8Buffer payload) {
+    final data = _getArgs(payload);
+    if (data.isEmpty) return null;
+
+    final type = int.parse(data[0]);
+    final args = data.sublist(1);
+    logger.fine("Got command from Local with type $type");
+
+    final command = _mapCommonEvents(type, args);
+    if (command != null) return command;
+
+    return switch (type) {
+      _ => null,
+    };
+  }
+
+  MqttEvent? mapRemoteCommandToEvent(Uint8Buffer payload) {
+    final data = _getArgs(payload);
+    if (data.isEmpty) return null;
+
+    final type = int.parse(data[0]);
+    final args = data.sublist(1);
+    logger.fine("Got command from Remote with type $type");
+
+    final command = _mapCommonEvents(type, args);
+    if (command != null) return command;
+
+    return switch (type) {
+      _ => null,
+    };
+  }
+
+  List<String> _getArgs(Uint8Buffer payload) {
+    final command = String.fromCharCodes(payload);
+    if (!command.startsWith("CATL:")) return [];
+    return command.substring(5).split(",");
+  }
+
+  MqttEvent? _mapCommonEvents(int type, List<String> args) {
+    return switch (type) {
+      3 => MqttPowerEvent.fromList(args),
+      _ => null,
+    };
   }
 }
