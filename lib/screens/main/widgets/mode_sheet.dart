@@ -60,6 +60,7 @@ class _ModeSheetContentState extends State<ModeSheetContent> {
 
                   return ModeCard(
                     onTap: () {
+                      if (selectedMode == mode) return;
                       setState(() {
                         selectedMode = mode;
                         if (widget.onModeChange != null) {
