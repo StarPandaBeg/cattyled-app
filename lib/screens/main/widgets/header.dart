@@ -33,6 +33,9 @@ class PageHeader extends StatelessWidget {
                   if (previous.isConnected != current.isConnected) {
                     return true;
                   }
+                  if (previous.isSynced != current.isSynced) {
+                    return true;
+                  }
                   if (previous.isRemoteActive != current.isRemoteActive) {
                     return true;
                   }
@@ -47,13 +50,12 @@ class PageHeader extends StatelessWidget {
           ),
           BlocBuilder<MqttBloc, MqttState>(
             buildWhen: (previous, current) {
-              if (previous.isConnected != current.isConnected) return true;
+              if (previous.isSynced != current.isSynced) return true;
               if (previous.isEnabled != current.isEnabled) return true;
               return false;
             },
             builder: (context, state) => IconButton(
-              onPressed:
-                  state.isConnected ? () => _onPowerPressed(context) : null,
+              onPressed: state.isSynced ? () => _onPowerPressed(context) : null,
               icon: const Icon(Icons.power_settings_new),
               color:
                   state.isEnabled ? colorScheme.primary : colorScheme.secondary,
@@ -67,6 +69,7 @@ class PageHeader extends StatelessWidget {
 
   String _stateToSubtitle(MqttState state) {
     if (!state.isConnected) return "Соединение...";
+    if (!state.isSynced) return "Синхронизация...";
     if (state.isRemoteActive) return "Ощущаю чьё-то присутствие!";
     return "Кот на месте. Мурр!";
   }

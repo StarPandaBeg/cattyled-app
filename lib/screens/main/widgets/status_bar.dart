@@ -19,14 +19,14 @@ class StatusBar extends StatelessWidget {
           children: [
             BlocBuilder<MqttBloc, MqttState>(
               buildWhen: (previous, current) {
-                if (previous.isConnected != current.isConnected) return true;
+                if (previous.isSynced != current.isSynced) return true;
                 if (previous.mode != current.mode) {
                   return true;
                 }
                 return false;
               },
               builder: (context, state) {
-                if (!state.isConnected || state.mode != LampMode.classic) {
+                if (!state.isSynced || state.mode != LampMode.classic) {
                   return const SizedBox(width: 32);
                 }
                 return const ColorChangeButton();
@@ -34,7 +34,7 @@ class StatusBar extends StatelessWidget {
             ),
             BlocBuilder<MqttBloc, MqttState>(
               buildWhen: (previous, current) {
-                if (previous.isConnected != current.isConnected) return true;
+                if (previous.isSynced != current.isSynced) return true;
                 if (previous.isRemoteActive != current.isRemoteActive) {
                   return true;
                 }
@@ -46,7 +46,7 @@ class StatusBar extends StatelessWidget {
                   const SizedBox(width: 5),
                   StatusIcon(
                     Icons.cloud,
-                    enabled: state.isConnected && state.isRemoteActive,
+                    enabled: state.isSynced && state.isRemoteActive,
                   ),
                 ],
               ),
@@ -73,9 +73,7 @@ class ColorChangeButton extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           GestureDetector(
-            onTap: state.isConnected
-                ? () => _onColorChangeTap(context, state.color)
-                : null,
+            onTap: () => _onColorChangeTap(context, state.color),
             child: Container(
               width: 32,
               height: 32,

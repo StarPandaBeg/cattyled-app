@@ -107,6 +107,7 @@ class MqttCommandEvent extends MqttEvent {
 
 class MqttState {
   final bool isConnected;
+  final bool isSynced;
   final bool isEnabled;
   final Color color;
   final LampMode mode;
@@ -115,6 +116,7 @@ class MqttState {
 
   MqttState({
     required this.isConnected,
+    required this.isSynced,
     required this.isEnabled,
     required this.color,
     required this.mode,
@@ -124,6 +126,7 @@ class MqttState {
 
   MqttState copyWith({
     bool? isConnected,
+    bool? isSynced,
     bool? isEnabled,
     Color? color,
     LampMode? mode,
@@ -132,6 +135,7 @@ class MqttState {
   }) {
     return MqttState(
       isConnected: isConnected ?? this.isConnected,
+      isSynced: isSynced ?? this.isSynced,
       isEnabled: isEnabled ?? this.isEnabled,
       color: color ?? this.color,
       mode: mode ?? this.mode,
@@ -143,6 +147,7 @@ class MqttState {
   factory MqttState.initial() {
     return MqttState(
       isConnected: false,
+      isSynced: false,
       isEnabled: false,
       color: const Color(0xffff0000),
       mode: LampMode.classic,
@@ -205,6 +210,7 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
           if (_periodicTimer != null) {
             _periodicTimer!.cancel();
             _periodicTimer = null;
+            emit(state.copyWith(isSynced: false));
           }
         }
       },
@@ -248,6 +254,7 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
         add(MqttPowerEvent(value: event.power));
         add(MqttColorEvent(value: event.color));
         add(MqttModeEvent(value: event.mode));
+        emit(state.copyWith(isSynced: true));
       },
     );
   }
@@ -294,7 +301,7 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
     const period = Duration(seconds: 10);
     _periodicTimer = Timer.periodic(period, (_) {
       final timeSinceInteraction = DateTime.now().difference(_lastUpdateTime);
-      final statusOnly = timeSinceInteraction.inSeconds < 20;
+      final statusOnly = timeSinceInteraction.inSeconds < 20 && state.isSynced;
       _requestUpdate(statusOnly: statusOnly);
     });
   }

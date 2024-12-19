@@ -43,7 +43,7 @@ class ScreenMain extends StatelessWidget {
                     Expanded(
                       child: BlocBuilder<MqttBloc, MqttState>(
                         buildWhen: (previous, current) {
-                          if (previous.isConnected != current.isConnected) {
+                          if (previous.isSynced != current.isSynced) {
                             return true;
                           }
                           if (previous.brightness != current.brightness) {
@@ -52,7 +52,7 @@ class ScreenMain extends StatelessWidget {
                           return false;
                         },
                         builder: (context, state) => DebouncedBrightnessSlider(
-                          disabled: !state.isConnected,
+                          disabled: !state.isSynced,
                           initial: state.brightness.toDouble(),
                           onChange: (value) {
                             final store = context.read<MqttBloc>();
@@ -68,7 +68,7 @@ class ScreenMain extends StatelessWidget {
                     const SizedBox(width: 10),
                     BlocBuilder<MqttBloc, MqttState>(
                       buildWhen: (previous, current) {
-                        if (previous.isConnected != current.isConnected) {
+                        if (previous.isSynced != current.isSynced) {
                           return true;
                         }
                         if (previous.mode != current.mode) return true;
@@ -78,7 +78,7 @@ class ScreenMain extends StatelessWidget {
                         flex: 4,
                         child: ModeSelect(
                           mode: state.mode,
-                          onTap: state.isConnected
+                          onTap: state.isSynced
                               ? () => _onModeChangeTap(context, state.mode)
                               : null,
                         ),
