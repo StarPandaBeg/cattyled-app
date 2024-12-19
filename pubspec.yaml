@@ -20,6 +20,7 @@ dependencies:
   typed_data: ^1.4.0
   flutter_bloc: ^8.1.6
   async: ^2.11.0
+  flex_color_picker: ^3.6.0
 
 dev_dependencies:
   flutter_test:

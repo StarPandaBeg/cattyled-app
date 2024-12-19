@@ -1,3 +1,5 @@
+import 'package:cattyled_app/api/commands.dart';
+import 'package:cattyled_app/screens/main/widgets/color_sheet.dart';
 import 'package:cattyled_app/store/mqtt.dart';
 import 'package:cattyled_app/widgets/status_icon.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +17,21 @@ class StatusBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(),
+            BlocBuilder<MqttBloc, MqttState>(
+              buildWhen: (previous, current) {
+                if (previous.isConnected != current.isConnected) return true;
+                if (previous.mode != current.mode) {
+                  return true;
+                }
+                return false;
+              },
+              builder: (context, state) {
+                if (!state.isConnected || state.mode != LampMode.classic) {
+                  return const SizedBox(width: 32);
+                }
+                return const ColorChangeButton();
+              },
+            ),
             BlocBuilder<MqttBloc, MqttState>(
               buildWhen: (previous, current) {
                 if (previous.isConnected != current.isConnected) return true;
@@ -35,9 +51,65 @@ class StatusBar extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(),
+            const SizedBox(
+              width: 32,
+              height: 32,
+            ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ColorChangeButton extends StatelessWidget {
+  const ColorChangeButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<MqttBloc, MqttState>(
+      buildWhen: (previous, current) => previous.color != current.color,
+      builder: (context, state) => Stack(
+        alignment: Alignment.center,
+        children: [
+          GestureDetector(
+            onTap: state.isConnected
+                ? () => _onColorChangeTap(context, state.color)
+                : null,
+            child: Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: state.color,
+              ),
+            ),
+          ),
+          const IgnorePointer(
+            child: Icon(
+              Icons.edit,
+              size: 16,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onColorChangeTap(BuildContext context, Color initial) {
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
+      builder: (modalContext) => ColorSheetContent(
+        initial: initial,
+        onColorChange: (color) {
+          final store = context.read<MqttBloc>();
+          store.add(
+            MqttCommandEvent(CommandColor(color: color)),
+          );
+        },
       ),
     );
   }
