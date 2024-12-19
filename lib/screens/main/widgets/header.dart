@@ -1,6 +1,6 @@
 import 'package:cattyled_app/api/commands.dart';
 import 'package:cattyled_app/screens/main/widgets/greeting.dart';
-import 'package:cattyled_app/store/mqtt.dart';
+import 'package:cattyled_app/store/lamp.dart';
 import 'package:cattyled_app/widgets/text_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,7 +30,7 @@ class PageHeader extends StatelessWidget {
           Column(
             children: [
               const TextGreeting(),
-              BlocBuilder<MqttBloc, MqttState>(
+              BlocBuilder<LampBloc, LampState>(
                 buildWhen: (previous, current) {
                   if (previous.isConnected != current.isConnected) {
                     return true;
@@ -50,7 +50,7 @@ class PageHeader extends StatelessWidget {
               ),
             ],
           ),
-          BlocBuilder<MqttBloc, MqttState>(
+          BlocBuilder<LampBloc, LampState>(
             buildWhen: (previous, current) {
               if (previous.isSynced != current.isSynced) return true;
               if (previous.isEnabled != current.isEnabled) return true;
@@ -69,7 +69,7 @@ class PageHeader extends StatelessWidget {
     );
   }
 
-  String _stateToSubtitle(MqttState state) {
+  String _stateToSubtitle(LampState state) {
     if (!state.isConnected) return "Соединение...";
     if (!state.isSynced) return "Синхронизация...";
     if (state.isRemoteActive) return "Ощущаю чьё-то присутствие!";
@@ -77,9 +77,9 @@ class PageHeader extends StatelessWidget {
   }
 
   void _onPowerPressed(BuildContext context) {
-    final store = context.read<MqttBloc>();
+    final store = context.read<LampBloc>();
     store.add(
-      MqttCommandEvent(CommandPower(state: !store.state.isEnabled)),
+      LampCommandEvent(CommandPower(state: !store.state.isEnabled)),
     );
   }
 }

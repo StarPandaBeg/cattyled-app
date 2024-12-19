@@ -4,7 +4,7 @@ import 'dart:ui' as ui; // show Image, decodeImageFromList;
 import 'dart:ui';
 
 import 'package:cattyled_app/api/commands.dart';
-import 'package:cattyled_app/store/mqtt.dart';
+import 'package:cattyled_app/store/lamp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +17,7 @@ class LampIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MqttBloc, MqttState>(
+    return BlocBuilder<LampBloc, LampState>(
       buildWhen: (previous, current) {
         if (previous.isEnabled != current.isEnabled) return true;
         if (previous.color != current.color) return true;
@@ -37,7 +37,7 @@ class LampIndicator extends StatelessWidget {
 }
 
 class _LampShadow extends StatefulWidget {
-  final MqttState state;
+  final LampState state;
 
   const _LampShadow({required this.state});
 
@@ -76,7 +76,7 @@ class _LampShadowState extends State<_LampShadow> {
 }
 
 class _Lamp extends StatefulWidget {
-  final MqttState state;
+  final LampState state;
 
   const _Lamp({required this.state});
 
@@ -139,7 +139,7 @@ class __LampState extends State<_Lamp> with SingleTickerProviderStateMixin {
 
 class _LampPainter extends CustomPainter {
   double animationValue;
-  MqttState state;
+  LampState state;
   final ui.Image? image;
 
   _LampPainter({

@@ -9,90 +9,90 @@ import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 import 'package:typed_data/typed_data.dart';
 
-abstract class MqttEvent {}
+abstract class LampEvent {}
 
-class _MqttConnectEvent extends MqttEvent {
+class _LampConnectEvent extends LampEvent {
   final bool state;
 
-  _MqttConnectEvent({required this.state});
+  _LampConnectEvent({required this.state});
 }
 
-class MqttPowerEvent extends MqttEvent {
+class LampPowerEvent extends LampEvent {
   final bool value;
 
-  MqttPowerEvent({required this.value});
+  LampPowerEvent({required this.value});
 
-  factory MqttPowerEvent.fromList(List<String> values) {
-    return MqttPowerEvent(value: values[0] == "1");
+  factory LampPowerEvent.fromList(List<String> values) {
+    return LampPowerEvent(value: values[0] == "1");
   }
 }
 
-class MqttColorEvent extends MqttEvent {
+class LampColorEvent extends LampEvent {
   final Color value;
 
-  MqttColorEvent({required this.value});
+  LampColorEvent({required this.value});
 
-  factory MqttColorEvent.fromList(List<String> values) {
+  factory LampColorEvent.fromList(List<String> values) {
     final hue = int.parse(values[0]) / 255 * 360;
     final saturation = int.parse(values[1]) / 255;
     final value = int.parse(values[2]) / 255;
     final color = HSVColor.fromAHSV(1, hue, saturation, value);
-    return MqttColorEvent(value: color.toColor());
+    return LampColorEvent(value: color.toColor());
   }
 }
 
-class MqttModeEvent extends MqttEvent {
+class LampModeEvent extends LampEvent {
   final LampMode value;
 
-  MqttModeEvent({required this.value});
+  LampModeEvent({required this.value});
 
-  factory MqttModeEvent.fromList(List<String> values) {
-    return MqttModeEvent(value: LampMode.values[int.parse(values[0])]);
+  factory LampModeEvent.fromList(List<String> values) {
+    return LampModeEvent(value: LampMode.values[int.parse(values[0])]);
   }
 }
 
-class MqttBrightnessEvent extends MqttEvent {
+class LampBrightnessEvent extends LampEvent {
   final int value;
 
-  MqttBrightnessEvent({required this.value});
+  LampBrightnessEvent({required this.value});
 
-  factory MqttBrightnessEvent.fromList(List<String> values) {
-    return MqttBrightnessEvent(value: int.parse(values[0]));
+  factory LampBrightnessEvent.fromList(List<String> values) {
+    return LampBrightnessEvent(value: int.parse(values[0]));
   }
 }
 
-class MqttStatusEvent extends MqttEvent {
+class LampStatusEvent extends LampEvent {
   final int brightness;
   final bool isRemoteActive;
 
-  MqttStatusEvent({required this.brightness, required this.isRemoteActive});
+  LampStatusEvent({required this.brightness, required this.isRemoteActive});
 
-  factory MqttStatusEvent.fromList(List<String> values) {
-    return MqttStatusEvent(
+  factory LampStatusEvent.fromList(List<String> values) {
+    return LampStatusEvent(
       brightness: int.parse(values[0]),
       isRemoteActive: values[2] == "1",
     );
   }
 }
 
-class MqttSyncEvent extends MqttEvent {
+class LampSyncEvent extends LampEvent {
   final bool power;
   final Color color;
   final LampMode mode;
 
-  MqttSyncEvent({
+  LampSyncEvent({
     required this.power,
     required this.color,
     required this.mode,
   });
 
-  factory MqttSyncEvent.fromList(List<String> values) {
+  factory LampSyncEvent.fromList(List<String> values) {
     final hue = int.parse(values[1]) / 255 * 360;
     final saturation = int.parse(values[2]) / 255;
     final value = int.parse(values[3]) / 255;
     final color = HSVColor.fromAHSV(1, hue, saturation, value);
 
-    return MqttSyncEvent(
+    return LampSyncEvent(
       power: values[0] == "1",
       color: color.toColor(),
       mode: LampMode.values[int.parse(values[4])],
@@ -100,13 +100,13 @@ class MqttSyncEvent extends MqttEvent {
   }
 }
 
-class MqttCommandEvent extends MqttEvent {
+class LampCommandEvent extends LampEvent {
   final Command command;
 
-  MqttCommandEvent(this.command);
+  LampCommandEvent(this.command);
 }
 
-class MqttState {
+class LampState {
   final bool isConnected;
   final bool isSynced;
   final bool isEnabled;
@@ -115,7 +115,7 @@ class MqttState {
   final int brightness;
   final bool isRemoteActive;
 
-  MqttState({
+  LampState({
     required this.isConnected,
     required this.isSynced,
     required this.isEnabled,
@@ -125,7 +125,7 @@ class MqttState {
     required this.isRemoteActive,
   });
 
-  MqttState copyWith({
+  LampState copyWith({
     bool? isConnected,
     bool? isSynced,
     bool? isEnabled,
@@ -134,7 +134,7 @@ class MqttState {
     int? brightness,
     bool? isRemoteActive,
   }) {
-    return MqttState(
+    return LampState(
       isConnected: isConnected ?? this.isConnected,
       isSynced: isSynced ?? this.isSynced,
       isEnabled: isEnabled ?? this.isEnabled,
@@ -145,8 +145,8 @@ class MqttState {
     );
   }
 
-  factory MqttState.initial() {
-    return MqttState(
+  factory LampState.initial() {
+    return LampState(
       isConnected: false,
       isSynced: false,
       isEnabled: false,
@@ -158,12 +158,12 @@ class MqttState {
   }
 }
 
-class MqttBloc extends Bloc<MqttEvent, MqttState> {
-  static final logger = Logger("MqttBloc");
+class LampBloc extends Bloc<LampEvent, LampState> {
+  static final logger = Logger("LampBloc");
 
   late MqttRepository _mqttRepo;
   final _connRepo = ConnectionRepository();
-  final _parser = _MqttCommandParser();
+  final _parser = _CommandParser();
 
   late final StreamSubscription<Uint8Buffer> _localMessageSubscription;
   late final StreamSubscription<Uint8Buffer> _remoteMessageSubscription;
@@ -171,7 +171,7 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
   Timer? _periodicTimer;
   DateTime _lastUpdateTime = DateTime.now();
 
-  MqttBloc() : super(MqttState.initial()) {
+  LampBloc() : super(LampState.initial()) {
     _mqttRepo = GetIt.instance<MqttRepository>();
 
     _setupNativeConnectionListener();
@@ -185,7 +185,7 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
       (p) => _parseEvent(_parser.mapRemoteCommandToEvent, p),
     );
 
-    add(_MqttConnectEvent(state: _mqttRepo.isConnected));
+    add(_LampConnectEvent(state: _mqttRepo.isConnected));
   }
 
   @override
@@ -199,12 +199,12 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
   }
 
   void _setupEventListeners() {
-    on<MqttEvent>(
+    on<LampEvent>(
       (event, emit) {
         _lastUpdateTime = DateTime.now();
       },
     );
-    on<_MqttConnectEvent>(
+    on<_LampConnectEvent>(
       (event, emit) {
         emit(state.copyWith(isConnected: event.state));
 
@@ -220,33 +220,33 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
         }
       },
     );
-    on<MqttCommandEvent>(
+    on<LampCommandEvent>(
       (event, emit) {
         final command = event.command;
         command.execute(_mqttRepo, add);
       },
     );
-    on<MqttPowerEvent>(
+    on<LampPowerEvent>(
       (event, emit) {
         emit(state.copyWith(isEnabled: event.value));
       },
     );
-    on<MqttColorEvent>(
+    on<LampColorEvent>(
       (event, emit) {
         emit(state.copyWith(color: event.value));
       },
     );
-    on<MqttModeEvent>(
+    on<LampModeEvent>(
       (event, emit) {
         emit(state.copyWith(mode: event.value));
       },
     );
-    on<MqttBrightnessEvent>(
+    on<LampBrightnessEvent>(
       (event, emit) {
         emit(state.copyWith(brightness: event.value));
       },
     );
-    on<MqttStatusEvent>(
+    on<LampStatusEvent>(
       (event, emit) {
         emit(state.copyWith(
           brightness: event.brightness,
@@ -254,11 +254,11 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
         ));
       },
     );
-    on<MqttSyncEvent>(
+    on<LampSyncEvent>(
       (event, emit) {
-        add(MqttPowerEvent(value: event.power));
-        add(MqttColorEvent(value: event.color));
-        add(MqttModeEvent(value: event.mode));
+        add(LampPowerEvent(value: event.power));
+        add(LampColorEvent(value: event.color));
+        add(LampModeEvent(value: event.mode));
         emit(state.copyWith(isSynced: true));
       },
     );
@@ -291,11 +291,11 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
 
   void _onActualConnectionStatusChange() {
     final state = _mqttRepo.isConnected;
-    add(_MqttConnectEvent(state: state));
+    add(_LampConnectEvent(state: state));
   }
 
   void _parseEvent(
-    MqttEvent? Function(Uint8Buffer) onData,
+    LampEvent? Function(Uint8Buffer) onData,
     Uint8Buffer payload,
   ) {
     final event = onData(payload);
@@ -314,15 +314,15 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
 
   void _requestUpdate({bool statusOnly = false}) {
     logger.fine("Requesting update");
-    if (!statusOnly) add(MqttCommandEvent(CommandSyncRequest()));
-    add(MqttCommandEvent(CommandStatusRequest()));
+    if (!statusOnly) add(LampCommandEvent(CommandSyncRequest()));
+    add(LampCommandEvent(CommandStatusRequest()));
   }
 }
 
-class _MqttCommandParser {
-  static final logger = Logger("MqttCommandParser");
+class _CommandParser {
+  static final logger = Logger("CommandParser");
 
-  MqttEvent? mapLocalCommandToEvent(Uint8Buffer payload) {
+  LampEvent? mapLocalCommandToEvent(Uint8Buffer payload) {
     final data = _getArgs(payload);
     if (data.isEmpty) return null;
 
@@ -338,7 +338,7 @@ class _MqttCommandParser {
     };
   }
 
-  MqttEvent? mapRemoteCommandToEvent(Uint8Buffer payload) {
+  LampEvent? mapRemoteCommandToEvent(Uint8Buffer payload) {
     final data = _getArgs(payload);
     if (data.isEmpty) return null;
 
@@ -350,9 +350,9 @@ class _MqttCommandParser {
     if (command != null) return command;
 
     return switch (type) {
-      1 => MqttSyncEvent.fromList(args),
-      7 => MqttBrightnessEvent.fromList(args),
-      8 => MqttStatusEvent.fromList(args),
+      1 => LampSyncEvent.fromList(args),
+      7 => LampBrightnessEvent.fromList(args),
+      8 => LampStatusEvent.fromList(args),
       _ => null,
     };
   }
@@ -363,11 +363,11 @@ class _MqttCommandParser {
     return command.substring(5).split(",");
   }
 
-  MqttEvent? _mapCommonEvents(int type, List<String> args) {
+  LampEvent? _mapCommonEvents(int type, List<String> args) {
     return switch (type) {
-      3 => MqttPowerEvent.fromList(args),
-      4 => MqttColorEvent.fromList(args),
-      5 => MqttModeEvent.fromList(args),
+      3 => LampPowerEvent.fromList(args),
+      4 => LampColorEvent.fromList(args),
+      5 => LampModeEvent.fromList(args),
       _ => null,
     };
   }

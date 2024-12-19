@@ -1,6 +1,6 @@
 import 'package:cattyled_app/providers/index.dart';
 import 'package:cattyled_app/routes.dart';
-import 'package:cattyled_app/store/mqtt.dart';
+import 'package:cattyled_app/store/lamp.dart';
 import 'package:cattyled_app/theme/app.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
           builder: (context) => Scaffold(
             body: SafeArea(
               child: BlocProvider(
-                create: (_) => MqttBloc(),
+                create: (_) => LampBloc(),
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: builder(context),

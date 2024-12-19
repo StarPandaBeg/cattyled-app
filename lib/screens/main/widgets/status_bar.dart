@@ -1,6 +1,6 @@
 import 'package:cattyled_app/api/commands.dart';
 import 'package:cattyled_app/screens/main/widgets/color_sheet.dart';
-import 'package:cattyled_app/store/mqtt.dart';
+import 'package:cattyled_app/store/lamp.dart';
 import 'package:cattyled_app/widgets/status_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +17,7 @@ class StatusBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            BlocBuilder<MqttBloc, MqttState>(
+            BlocBuilder<LampBloc, LampState>(
               buildWhen: (previous, current) {
                 if (previous.isSynced != current.isSynced) return true;
                 if (previous.mode != current.mode) {
@@ -32,7 +32,7 @@ class StatusBar extends StatelessWidget {
                 return const ColorChangeButton();
               },
             ),
-            BlocBuilder<MqttBloc, MqttState>(
+            BlocBuilder<LampBloc, LampState>(
               buildWhen: (previous, current) {
                 if (previous.isSynced != current.isSynced) return true;
                 if (previous.isRemoteActive != current.isRemoteActive) {
@@ -67,7 +67,7 @@ class ColorChangeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MqttBloc, MqttState>(
+    return BlocBuilder<LampBloc, LampState>(
       buildWhen: (previous, current) => previous.color != current.color,
       builder: (context, state) => Stack(
         alignment: Alignment.center,
@@ -103,9 +103,9 @@ class ColorChangeButton extends StatelessWidget {
       builder: (modalContext) => ColorSheetContent(
         initial: initial,
         onColorChange: (color) {
-          final store = context.read<MqttBloc>();
+          final store = context.read<LampBloc>();
           store.add(
-            MqttCommandEvent(CommandColor(color: color)),
+            LampCommandEvent(CommandColor(color: color)),
           );
         },
       ),

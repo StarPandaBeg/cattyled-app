@@ -5,7 +5,7 @@ import 'package:cattyled_app/screens/main/widgets/lamp.dart';
 import 'package:cattyled_app/screens/main/widgets/mode_select.dart';
 import 'package:cattyled_app/screens/main/widgets/mode_sheet.dart';
 import 'package:cattyled_app/screens/main/widgets/status_bar.dart';
-import 'package:cattyled_app/store/mqtt.dart';
+import 'package:cattyled_app/store/lamp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -41,7 +41,7 @@ class ScreenMain extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: BlocBuilder<MqttBloc, MqttState>(
+                      child: BlocBuilder<LampBloc, LampState>(
                         buildWhen: (previous, current) {
                           if (previous.isSynced != current.isSynced) {
                             return true;
@@ -55,9 +55,9 @@ class ScreenMain extends StatelessWidget {
                           disabled: !state.isSynced,
                           initial: state.brightness.toDouble(),
                           onChange: (value) {
-                            final store = context.read<MqttBloc>();
+                            final store = context.read<LampBloc>();
                             store.add(
-                              MqttCommandEvent(
+                              LampCommandEvent(
                                 CommandBrightness(brightness: value.toInt()),
                               ),
                             );
@@ -66,7 +66,7 @@ class ScreenMain extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    BlocBuilder<MqttBloc, MqttState>(
+                    BlocBuilder<LampBloc, LampState>(
                       buildWhen: (previous, current) {
                         if (previous.isSynced != current.isSynced) {
                           return true;
@@ -104,9 +104,9 @@ class ScreenMain extends StatelessWidget {
       builder: (modalContext) => ModeSheetContent(
         initial: initial,
         onModeChange: (mode) {
-          final store = context.read<MqttBloc>();
+          final store = context.read<LampBloc>();
           store.add(
-            MqttCommandEvent(CommandMode(mode: mode)),
+            LampCommandEvent(CommandMode(mode: mode)),
           );
         },
       ),
