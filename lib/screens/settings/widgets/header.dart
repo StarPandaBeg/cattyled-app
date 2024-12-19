@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class PageHeader extends StatelessWidget {
-  const PageHeader({super.key});
+  final String header;
+
+  const PageHeader({super.key, required this.header});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class PageHeader extends StatelessWidget {
               color: colorScheme.secondary,
             ),
           ),
-          Text("Настройки", style: theme.textTheme.headlineMedium),
+          Text(header, style: theme.textTheme.headlineMedium),
           const SizedBox(width: 32),
         ],
       ),

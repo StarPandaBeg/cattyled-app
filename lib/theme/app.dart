@@ -46,5 +46,10 @@ ThemeData appTheme() {
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: Color(0xFF1c1a1a),
     ),
+    inputDecorationTheme: const InputDecorationTheme(
+      fillColor: Color.fromARGB(255, 26, 26, 26),
+      filled: true,
+      border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+    ),
   );
 }

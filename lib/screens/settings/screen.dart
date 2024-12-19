@@ -1,5 +1,7 @@
 import 'package:cattyled_app/screens/settings/widgets/header.dart';
+import 'package:cattyled_app/store/lamp_settings/store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ScreenSettings extends StatelessWidget {
   const ScreenSettings({super.key});
@@ -24,25 +26,27 @@ class ScreenSettings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const PageHeader(),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _listEntries.length,
-              itemBuilder: (context, index) {
-                final itemData = _listEntries[index];
-                return _SettingsListEntry(
-                  icon: itemData["icon"],
-                  title: itemData["name"],
-                  onTap: () {},
-                );
-              },
+          const PageHeader(header: "Настройки"),
+          BlocProvider(
+            create: (_) => LampSettingsBloc(),
+            child: Expanded(
+              child: ListView.builder(
+                itemCount: _listEntries.length,
+                itemBuilder: (context, index) {
+                  final itemData = _listEntries[index];
+                  return _SettingsListEntry(
+                    icon: itemData["icon"],
+                    title: itemData["name"],
+                    onTap: () {
+                      Navigator.pushNamed(context, itemData["route"]);
+                    },
+                  );
+                },
+              ),
             ),
           ),
           _SettingsListEntry(
