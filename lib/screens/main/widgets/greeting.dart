@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:cattyled_app/widgets/text_animated.dart';
@@ -90,10 +89,5 @@ class _TextGreetingState extends State<TextGreeting> {
       final phrases = _greetingPhrases[periodIndex];
       greeting = phrases[random.nextInt(phrases.length)];
     });
-
-    final now = DateTime.now();
-    final nextHour = DateTime(now.year, now.month, now.day, now.hour + 1);
-    final timeToNextHour = nextHour.difference(now);
-    Timer(timeToNextHour, _updateGreeting);
   }
 }
