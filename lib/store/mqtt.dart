@@ -5,6 +5,7 @@ import 'package:cattyled_app/repository/connection.dart';
 import 'package:cattyled_app/repository/mqtt.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 import 'package:typed_data/typed_data.dart';
 
@@ -160,7 +161,7 @@ class MqttState {
 class MqttBloc extends Bloc<MqttEvent, MqttState> {
   static final logger = Logger("MqttBloc");
 
-  final _mqttRepo = MqttRepository();
+  late MqttRepository _mqttRepo;
   final _connRepo = ConnectionRepository();
   final _parser = _MqttCommandParser();
 
@@ -171,6 +172,8 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
   DateTime _lastUpdateTime = DateTime.now();
 
   MqttBloc() : super(MqttState.initial()) {
+    _mqttRepo = GetIt.instance<MqttRepository>();
+
     _setupNativeConnectionListener();
     _setupActualConnectionListener();
     _setupEventListeners();
@@ -181,6 +184,8 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
     _remoteMessageSubscription = _mqttRepo.remoteMessages.listen(
       (p) => _parseEvent(_parser.mapRemoteCommandToEvent, p),
     );
+
+    add(_MqttConnectEvent(state: _mqttRepo.isConnected));
   }
 
   @override
@@ -268,16 +273,17 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
   }
 
   Future<void> _onNativeConnectionStatusChange() async {
-    final state = _connRepo.isConnected;
+    final isConnected = _connRepo.isConnected;
+    if (isConnected == state.isConnected) return;
     try {
-      final action = state ? _mqttRepo.connect : _mqttRepo.disconnect;
+      final action = isConnected ? _mqttRepo.connect : _mqttRepo.disconnect;
       await action();
       logger.info(
-        "Successfully ${state ? 'connected to' : 'disconnected from'} MQTT server",
+        "Successfully ${isConnected ? 'connected to' : 'disconnected from'} MQTT server",
       );
     } catch (e) {
       logger.warning(
-        "Unable to ${state ? 'connect to' : 'disconnect from'} MQTT server",
+        "Unable to ${isConnected ? 'connect to' : 'disconnect from'} MQTT server",
         [e],
       );
     }
