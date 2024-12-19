@@ -19,7 +19,9 @@ class PageHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, "/settings");
+            },
             icon: Icon(
               Icons.settings,
               color: colorScheme.secondary,
