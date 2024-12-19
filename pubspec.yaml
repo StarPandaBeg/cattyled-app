@@ -21,6 +21,7 @@ dependencies:
   flutter_bloc: ^8.1.6
   async: ^2.11.0
   flex_color_picker: ^3.6.0
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:

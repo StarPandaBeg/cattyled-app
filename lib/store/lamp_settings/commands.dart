@@ -20,6 +20,17 @@ class CommandWifiRequest extends Command {
   }
 }
 
+class CommandMqttRequest extends Command {
+  @override
+  void execute(
+    MqttRepository repository,
+    void Function(LampSettingsEvent) addEvent,
+  ) {
+    final command = buildCommand([-5]);
+    repository.sendToLocal(command);
+  }
+}
+
 class CommandIpRequest extends Command {
   @override
   void execute(
@@ -27,6 +38,17 @@ class CommandIpRequest extends Command {
     void Function(LampSettingsEvent) addEvent,
   ) {
     final command = buildCommand([-17]);
+    repository.sendToLocal(command);
+  }
+}
+
+class CommandIdRequest extends Command {
+  @override
+  void execute(
+    MqttRepository repository,
+    void Function(LampSettingsEvent) addEvent,
+  ) {
+    final command = buildCommand([-21]);
     repository.sendToLocal(command);
   }
 }

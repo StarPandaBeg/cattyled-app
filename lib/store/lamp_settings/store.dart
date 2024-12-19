@@ -45,6 +45,55 @@ class LampSettingsIpEvent extends LampSettingsEvent {
   }
 }
 
+class LampSettingsMqttEvent extends LampSettingsEvent {
+  final bool enabled;
+  final String host;
+  final int port;
+  final String prefix;
+  final bool hasCreds;
+  final String? user;
+  final String? password;
+
+  LampSettingsMqttEvent({
+    required this.enabled,
+    required this.host,
+    required this.port,
+    required this.prefix,
+    required this.hasCreds,
+    this.user,
+    this.password,
+  });
+
+  factory LampSettingsMqttEvent.fromList(List<String> values) {
+    return LampSettingsMqttEvent(
+      enabled: values[0] == "1",
+      host: values[1],
+      port: int.parse(values[2]),
+      prefix: values[3],
+      hasCreds: values[4] == "1",
+      user: values[4] == "1" ? values[5] : "",
+      password: values[4] == "1" ? values[6] : "",
+    );
+  }
+}
+
+class LampSettingsIdEvent extends LampSettingsEvent {
+  final String localId;
+  final String remoteId;
+
+  LampSettingsIdEvent({
+    required this.localId,
+    required this.remoteId,
+  });
+
+  factory LampSettingsIdEvent.fromList(List<String> values) {
+    return LampSettingsIdEvent(
+      localId: values[0],
+      remoteId: values[1],
+    );
+  }
+}
+
 class LampSettingsState {
   final bool isConnected;
   final bool isSynced;
@@ -52,12 +101,31 @@ class LampSettingsState {
   final String wifiPassword;
   final String wifiIp;
 
+  final bool mqttEnabled;
+  final String mqttHost;
+  final int mqttPort;
+  final String mqttPrefix;
+  final bool mqttHasCreds;
+  final String? mqttUser;
+  final String? mqttPassword;
+  final String mqttLocalId;
+  final String mqttRemoteId;
+
   LampSettingsState({
     required this.isConnected,
     required this.isSynced,
     required this.wifiSSID,
     required this.wifiPassword,
     required this.wifiIp,
+    required this.mqttEnabled,
+    required this.mqttHost,
+    required this.mqttPort,
+    required this.mqttPrefix,
+    required this.mqttHasCreds,
+    required this.mqttLocalId,
+    required this.mqttRemoteId,
+    this.mqttUser,
+    this.mqttPassword,
   });
 
   LampSettingsState copyWith({
@@ -66,6 +134,15 @@ class LampSettingsState {
     String? wifiSSID,
     String? wifiPassword,
     String? wifiIp,
+    bool? mqttEnabled,
+    String? mqttHost,
+    int? mqttPort,
+    String? mqttPrefix,
+    bool? mqttHasCreds,
+    String? mqttUser,
+    String? mqttPassword,
+    String? mqttLocalId,
+    String? mqttRemoteId,
   }) {
     return LampSettingsState(
       isConnected: isConnected ?? this.isConnected,
@@ -73,6 +150,15 @@ class LampSettingsState {
       wifiSSID: wifiSSID ?? this.wifiSSID,
       wifiPassword: wifiPassword ?? this.wifiPassword,
       wifiIp: wifiIp ?? this.wifiIp,
+      mqttEnabled: mqttEnabled ?? this.mqttEnabled,
+      mqttHost: mqttHost ?? this.mqttHost,
+      mqttPort: mqttPort ?? this.mqttPort,
+      mqttPrefix: mqttPrefix ?? this.mqttPrefix,
+      mqttHasCreds: mqttHasCreds ?? this.mqttHasCreds,
+      mqttUser: mqttUser ?? this.mqttUser,
+      mqttPassword: mqttPassword ?? this.mqttPassword,
+      mqttLocalId: mqttLocalId ?? this.mqttLocalId,
+      mqttRemoteId: mqttRemoteId ?? this.mqttRemoteId,
     );
   }
 
@@ -83,6 +169,13 @@ class LampSettingsState {
       wifiSSID: "",
       wifiPassword: "",
       wifiIp: "",
+      mqttEnabled: false,
+      mqttHost: "",
+      mqttPort: 1883,
+      mqttPrefix: "",
+      mqttHasCreds: false,
+      mqttLocalId: "",
+      mqttRemoteId: "",
     );
   }
 }
@@ -176,6 +269,33 @@ class LampSettingsBloc extends Bloc<LampSettingsEvent, LampSettingsState> {
         );
       },
     );
+    on<LampSettingsMqttEvent>(
+      (event, emit) {
+        emit(
+          state.copyWith(
+            mqttEnabled: event.enabled,
+            mqttHost: event.host,
+            mqttPort: event.port,
+            mqttPrefix: event.prefix,
+            mqttHasCreds: event.hasCreds,
+            mqttUser: event.user,
+            mqttPassword: event.password,
+            isSynced: true,
+          ),
+        );
+      },
+    );
+    on<LampSettingsIdEvent>(
+      (event, emit) {
+        emit(
+          state.copyWith(
+            mqttLocalId: event.localId,
+            mqttRemoteId: event.remoteId,
+            isSynced: true,
+          ),
+        );
+      },
+    );
   }
 
   void _setupPeriodicUpdate() {
@@ -232,6 +352,8 @@ class LampSettingsBloc extends Bloc<LampSettingsEvent, LampSettingsState> {
 
     add(LampSettingsCommandEvent(CommandWifiRequest()));
     add(LampSettingsCommandEvent(CommandIpRequest()));
+    add(LampSettingsCommandEvent(CommandMqttRequest()));
+    add(LampSettingsCommandEvent(CommandIdRequest()));
     // if (!statusOnly) add(LampCommandEvent(CommandSyncRequest()));
     // add(LampCommandEvent(CommandStatusRequest()));
   }
@@ -269,7 +391,9 @@ class _CommandParser {
 
     return switch (type) {
       -2 => LampSettingsWifiEvent.fromList(args),
+      -6 => LampSettingsMqttEvent.fromList(args),
       -18 => LampSettingsIpEvent.fromList(args),
+      -20 => LampSettingsIdEvent.fromList(args),
       _ => null,
     };
   }
