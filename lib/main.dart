@@ -1,6 +1,6 @@
 import 'package:cattyled_app/providers/index.dart';
 import 'package:cattyled_app/routes.dart';
-import 'package:cattyled_app/store/lamp.dart';
+import 'package:cattyled_app/store/lamp/store.dart';
 import 'package:cattyled_app/theme/app.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,4 @@
-import 'package:cattyled_app/api/commands.dart';
-import 'package:cattyled_app/store/lamp.dart';
+import 'package:cattyled_app/store/lamp/store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

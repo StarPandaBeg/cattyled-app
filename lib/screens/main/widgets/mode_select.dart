@@ -1,4 +1,4 @@
-import 'package:cattyled_app/api/commands.dart';
+import 'package:cattyled_app/store/lamp/store.dart';
 import 'package:flutter/material.dart';
 
 class ModeSelect extends StatelessWidget {

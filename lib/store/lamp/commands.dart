@@ -1,49 +1,9 @@
 import 'package:cattyled_app/repository/mqtt.dart';
-import 'package:cattyled_app/store/lamp.dart';
+import 'package:cattyled_app/store/lamp/store.dart';
 import 'package:flutter/material.dart';
-import 'package:mqtt_client/mqtt_client.dart';
-import 'package:typed_data/typed_data.dart';
-
-enum LampMode { classic, rainbow, glow, pulse, fire, lights }
-
-final Map<LampMode, Map<String, dynamic>> lampModes = {
-  LampMode.classic: {
-    "name": "Классика",
-    "icon": Icons.light,
-  },
-  LampMode.rainbow: {
-    "name": "Радуга",
-    "icon": Icons.looks,
-  },
-  LampMode.glow: {
-    "name": "Сияние",
-    "icon": Icons.auto_awesome,
-  },
-  LampMode.pulse: {
-    "name": "Пульс",
-    "icon": Icons.favorite,
-  },
-  LampMode.fire: {
-    "name": "Пламя",
-    "icon": Icons.local_fire_department,
-  },
-  LampMode.lights: {
-    "name": "Праздник",
-    "icon": Icons.celebration,
-  },
-};
 
 abstract class Command {
   void execute(MqttRepository repository, void Function(LampEvent) addEvent);
-
-  Uint8Buffer _buildCommand(List<dynamic> args) {
-    final data = args.map((item) => item.toString()).join(",");
-    final builder = MqttClientPayloadBuilder();
-
-    builder.addString("CATLAPP:");
-    builder.addString(data);
-    return builder.payload!;
-  }
 }
 
 class CommandPower extends Command {
@@ -53,7 +13,7 @@ class CommandPower extends Command {
 
   @override
   void execute(MqttRepository repository, void Function(LampEvent) addEvent) {
-    final command = _buildCommand([3, state ? 1 : 0]);
+    final command = buildCommand([3, state ? 1 : 0]);
     repository.send(command);
     addEvent(LampPowerEvent(value: state));
   }
@@ -71,7 +31,7 @@ class CommandColor extends Command {
     final saturation = (hsvColor.saturation * 255).toInt();
     final value = (hsvColor.value * 255).toInt();
 
-    final command = _buildCommand([4, hue, saturation, value]);
+    final command = buildCommand([4, hue, saturation, value]);
     repository.send(command);
     addEvent(LampColorEvent(value: color));
   }
@@ -84,7 +44,7 @@ class CommandMode extends Command {
 
   @override
   void execute(MqttRepository repository, void Function(LampEvent) addEvent) {
-    final command = _buildCommand([5, mode.index]);
+    final command = buildCommand([5, mode.index]);
     repository.send(command);
     addEvent(LampModeEvent(value: mode));
   }
@@ -93,7 +53,7 @@ class CommandMode extends Command {
 class CommandWink extends Command {
   @override
   void execute(MqttRepository repository, void Function(LampEvent) addEvent) {
-    final command = _buildCommand([6]);
+    final command = buildCommand([6]);
     repository.send(command);
   }
 }
@@ -105,7 +65,7 @@ class CommandBrightness extends Command {
 
   @override
   void execute(MqttRepository repository, void Function(LampEvent) addEvent) {
-    final command = _buildCommand([7, brightness]);
+    final command = buildCommand([7, brightness]);
     repository.send(command);
     addEvent(LampBrightnessEvent(value: brightness));
   }
@@ -114,7 +74,7 @@ class CommandBrightness extends Command {
 class CommandPing extends Command {
   @override
   void execute(MqttRepository repository, void Function(LampEvent) addEvent) {
-    final command = _buildCommand([0]);
+    final command = buildCommand([0]);
     repository.send(command);
   }
 }
@@ -122,7 +82,7 @@ class CommandPing extends Command {
 class CommandSyncRequest extends Command {
   @override
   void execute(MqttRepository repository, void Function(LampEvent) addEvent) {
-    final command = _buildCommand([2]);
+    final command = buildCommand([2]);
     repository.sendToLocal(command);
   }
 }
@@ -130,7 +90,7 @@ class CommandSyncRequest extends Command {
 class CommandStatusRequest extends Command {
   @override
   void execute(MqttRepository repository, void Function(LampEvent) addEvent) {
-    final command = _buildCommand([8]);
+    final command = buildCommand([8]);
     repository.sendToLocal(command);
   }
 }

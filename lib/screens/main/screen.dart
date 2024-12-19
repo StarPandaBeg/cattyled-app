@@ -1,11 +1,10 @@
-import 'package:cattyled_app/api/commands.dart';
 import 'package:cattyled_app/screens/main/widgets/brightness_slider.dart';
 import 'package:cattyled_app/screens/main/widgets/header.dart';
 import 'package:cattyled_app/screens/main/widgets/lamp.dart';
 import 'package:cattyled_app/screens/main/widgets/mode_select.dart';
 import 'package:cattyled_app/screens/main/widgets/mode_sheet.dart';
 import 'package:cattyled_app/screens/main/widgets/status_bar.dart';
-import 'package:cattyled_app/store/lamp.dart';
+import 'package:cattyled_app/store/lamp/store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

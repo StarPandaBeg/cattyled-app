@@ -1,6 +1,6 @@
-import 'package:cattyled_app/api/commands.dart';
+import 'package:cattyled_app/store/lamp/commands.dart';
 import 'package:cattyled_app/screens/main/widgets/greeting.dart';
-import 'package:cattyled_app/store/lamp.dart';
+import 'package:cattyled_app/store/lamp/store.dart';
 import 'package:cattyled_app/widgets/text_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

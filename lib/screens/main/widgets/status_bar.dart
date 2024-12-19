@@ -1,6 +1,5 @@
-import 'package:cattyled_app/api/commands.dart';
 import 'package:cattyled_app/screens/main/widgets/color_sheet.dart';
-import 'package:cattyled_app/store/lamp.dart';
+import 'package:cattyled_app/store/lamp/store.dart';
 import 'package:cattyled_app/widgets/status_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

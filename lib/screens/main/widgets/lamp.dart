@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui' as ui; // show Image, decodeImageFromList;
-import 'dart:ui';
+import 'dart:ui' as ui;
 
-import 'package:cattyled_app/api/commands.dart';
-import 'package:cattyled_app/store/lamp.dart';
+import 'package:cattyled_app/store/lamp/store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,7 +47,7 @@ class _LampShadowState extends State<_LampShadow> {
   @override
   Widget build(BuildContext context) {
     return ImageFiltered(
-      imageFilter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+      imageFilter: ui.ImageFilter.blur(sigmaX: 20, sigmaY: 20),
       child: Image.asset(
         "assets/images/cat.png",
         fit: BoxFit.contain,
