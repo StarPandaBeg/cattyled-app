@@ -53,6 +53,17 @@ class CommandIdRequest extends Command {
   }
 }
 
+class CommandVersionRequest extends Command {
+  @override
+  void execute(
+    MqttRepository repository,
+    void Function(LampSettingsEvent) addEvent,
+  ) {
+    final command = buildCommand([-7]);
+    repository.sendToLocal(command);
+  }
+}
+
 class CommandWifi extends Command {
   final String ssid;
   final String password;

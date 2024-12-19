@@ -94,6 +94,23 @@ class LampSettingsIdEvent extends LampSettingsEvent {
   }
 }
 
+class LampSettingsVersionEvent extends LampSettingsEvent {
+  final String firmware;
+  final String fs;
+
+  LampSettingsVersionEvent({
+    required this.firmware,
+    required this.fs,
+  });
+
+  factory LampSettingsVersionEvent.fromList(List<String> values) {
+    return LampSettingsVersionEvent(
+      firmware: values[0],
+      fs: values[1],
+    );
+  }
+}
+
 class LampSettingsState {
   final bool isConnected;
   final bool isSynced;
@@ -111,6 +128,9 @@ class LampSettingsState {
   final String mqttLocalId;
   final String mqttRemoteId;
 
+  final String firmwareVersion;
+  final String fsVersion;
+
   LampSettingsState({
     required this.isConnected,
     required this.isSynced,
@@ -124,6 +144,8 @@ class LampSettingsState {
     required this.mqttHasCreds,
     required this.mqttLocalId,
     required this.mqttRemoteId,
+    required this.firmwareVersion,
+    required this.fsVersion,
     this.mqttUser,
     this.mqttPassword,
   });
@@ -143,6 +165,8 @@ class LampSettingsState {
     String? mqttPassword,
     String? mqttLocalId,
     String? mqttRemoteId,
+    String? firmwareVersion,
+    String? fsVersion,
   }) {
     return LampSettingsState(
       isConnected: isConnected ?? this.isConnected,
@@ -159,6 +183,8 @@ class LampSettingsState {
       mqttPassword: mqttPassword ?? this.mqttPassword,
       mqttLocalId: mqttLocalId ?? this.mqttLocalId,
       mqttRemoteId: mqttRemoteId ?? this.mqttRemoteId,
+      firmwareVersion: firmwareVersion ?? this.firmwareVersion,
+      fsVersion: fsVersion ?? this.fsVersion,
     );
   }
 
@@ -176,6 +202,8 @@ class LampSettingsState {
       mqttHasCreds: false,
       mqttLocalId: "",
       mqttRemoteId: "",
+      firmwareVersion: "",
+      fsVersion: "",
     );
   }
 }
@@ -296,6 +324,17 @@ class LampSettingsBloc extends Bloc<LampSettingsEvent, LampSettingsState> {
         );
       },
     );
+    on<LampSettingsVersionEvent>(
+      (event, emit) {
+        emit(
+          state.copyWith(
+            firmwareVersion: event.firmware,
+            fsVersion: event.fs,
+            isSynced: true,
+          ),
+        );
+      },
+    );
   }
 
   void _setupPeriodicUpdate() {
@@ -354,8 +393,7 @@ class LampSettingsBloc extends Bloc<LampSettingsEvent, LampSettingsState> {
     add(LampSettingsCommandEvent(CommandIpRequest()));
     add(LampSettingsCommandEvent(CommandMqttRequest()));
     add(LampSettingsCommandEvent(CommandIdRequest()));
-    // if (!statusOnly) add(LampCommandEvent(CommandSyncRequest()));
-    // add(LampCommandEvent(CommandStatusRequest()));
+    add(LampSettingsCommandEvent(CommandVersionRequest()));
   }
 }
 
@@ -392,6 +430,7 @@ class _CommandParser {
     return switch (type) {
       -2 => LampSettingsWifiEvent.fromList(args),
       -6 => LampSettingsMqttEvent.fromList(args),
+      -8 => LampSettingsVersionEvent.fromList(args),
       -18 => LampSettingsIpEvent.fromList(args),
       -20 => LampSettingsIdEvent.fromList(args),
       _ => null,
