@@ -41,7 +41,6 @@ class StatusBar extends StatelessWidget {
               },
               builder: (context, state) => Row(
                 children: [
-                  const StatusIcon(Icons.cloud_sync),
                   const SizedBox(width: 5),
                   StatusIcon(
                     Icons.cloud,
@@ -49,10 +48,6 @@ class StatusBar extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-            const SizedBox(
-              width: 32,
-              height: 32,
             ),
           ],
         ),
