@@ -227,7 +227,7 @@ class _ScreenUpdateState extends State<ScreenUpdate> {
               child: const Text('Вперёд'),
               onPressed: () {
                 Navigator.popUntil(context, (_) => false);
-                Navigator.pushReplacementNamed(context, "/splash");
+                Navigator.pushNamed(context, "/splash");
               },
             ),
           ],
