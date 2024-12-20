@@ -1,3 +1,4 @@
+import 'package:cattyled_app/config/config.dart';
 import 'package:cattyled_app/store/lamp_settings/store.dart';
 
 class QueryData {
@@ -31,6 +32,19 @@ class QueryData {
       mqttPassword: state.mqttPassword,
       mqttLocalId: state.mqttLocalId,
       mqttRemoteId: state.mqttRemoteId,
+    );
+  }
+
+  factory QueryData.fromConfig(Config config) {
+    return QueryData(
+      mqttHost: config.mqttHost,
+      mqttPort: config.mqttPort,
+      mqttPrefix: config.lampPrefix,
+      mqttHasCreds: config.mqttUseCredentials,
+      mqttUser: config.mqttUser,
+      mqttPassword: config.mqttPassword,
+      mqttLocalId: config.lampLocalName,
+      mqttRemoteId: config.lampRemoteName,
     );
   }
 }

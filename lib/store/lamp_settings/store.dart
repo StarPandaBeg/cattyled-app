@@ -391,9 +391,11 @@ class LampSettingsBloc extends Bloc<LampSettingsEvent, LampSettingsState> {
 
     add(LampSettingsCommandEvent(CommandWifiRequest()));
     add(LampSettingsCommandEvent(CommandIpRequest()));
-    add(LampSettingsCommandEvent(CommandMqttRequest()));
-    add(LampSettingsCommandEvent(CommandIdRequest()));
     add(LampSettingsCommandEvent(CommandVersionRequest()));
+
+    // UNUSED
+    // add(LampSettingsCommandEvent(CommandMqttRequest()));
+    // add(LampSettingsCommandEvent(CommandIdRequest()));
   }
 }
 
