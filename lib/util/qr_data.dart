@@ -61,7 +61,7 @@ QueryData parseData(String query) {
     mqttHasCreds: bool.parse(parts[3]),
     mqttUser: parts[4],
     mqttPassword: parts[5],
-    mqttLocalId: parts[6],
-    mqttRemoteId: parts[7],
+    mqttRemoteId: parts[6],
+    mqttLocalId: parts[7],
   );
 }

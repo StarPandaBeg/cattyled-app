@@ -34,4 +34,25 @@ class ConfigLoader {
     logger.info("Config loaded");
     return _loadingState;
   }
+
+  Future<ConfigLoadingState> save(QueryData data) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final dataString = stringifyData(data);
+    prefs.setString(_configKey, dataString);
+
+    _config = Config.fromQuery(data);
+    _loadingState = ConfigLoadingState.loaded;
+    logger.info("Config loaded");
+    return _loadingState;
+  }
+
+  Future<ConfigLoadingState> clear() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    _config = Config.placeholder();
+    _loadingState = ConfigLoadingState.none;
+    return _loadingState;
+  }
 }

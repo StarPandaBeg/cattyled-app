@@ -24,6 +24,8 @@ dependencies:
   qr_flutter: ^4.1.0
   package_info_plus: ^8.1.2
   shared_preferences: ^2.3.4
+  mobile_scanner: ^6.0.2
+  vibration: ^2.0.1
 
 dev_dependencies:
   flutter_test:
