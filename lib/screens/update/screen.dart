@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cattyled_app/screens/settings/widgets/header.dart';
 import 'package:cattyled_app/store/lamp/store.dart';
+import 'package:cattyled_app/widgets/logo_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -44,20 +45,16 @@ class _ScreenUpdateState extends State<ScreenUpdate> {
             header: "Обновление",
             enableBack: false,
           ),
-          Card(
-            margin: const EdgeInsets.symmetric(vertical: 4),
+          const Card(
+            margin: EdgeInsets.symmetric(vertical: 4),
             child: SizedBox(
               width: double.infinity,
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+                padding: EdgeInsets.only(bottom: 20, left: 20, right: 20),
                 child: Column(
                   children: [
-                    SizedBox(
-                      width: 256,
-                      height: 192,
-                      child: Image.asset("assets/images/logo.png"),
-                    ),
-                    const Text("Пожалуйста, подождите..."),
+                    LogoAnimated(),
+                    Text("Пожалуйста, подождите..."),
                   ],
                 ),
               ),

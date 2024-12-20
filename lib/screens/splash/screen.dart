@@ -1,6 +1,6 @@
 import 'package:cattyled_app/config/loader.dart';
 import 'package:cattyled_app/providers/index.dart';
-import 'package:cattyled_app/screens/splash/widgets/logo_animated.dart';
+import 'package:cattyled_app/widgets/logo_animated.dart';
 import 'package:flutter/material.dart';
 
 class ScreenSplash extends StatelessWidget {
