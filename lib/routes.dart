@@ -7,7 +7,6 @@ import 'package:cattyled_app/screens/settings/screen.dart';
 import 'package:cattyled_app/screens/splash-hello/screen.dart';
 import 'package:cattyled_app/screens/splash-qr/screen.dart';
 import 'package:cattyled_app/screens/splash/screen.dart';
-import 'package:cattyled_app/screens/update/screen.dart';
 import 'package:flutter/widgets.dart';
 
 final Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
@@ -19,6 +18,5 @@ final Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   "/settings/wifi": (BuildContext context) => const ScreenSettingsWifi(),
   "/settings/sync": (BuildContext context) => const ScreenSettingsCloud(),
   "/settings/updates": (BuildContext context) => const ScreenSettingsUpdate(),
-  "/update": (BuildContext context) => const ScreenUpdate(),
   "/mqtt-test": (BuildContext context) => const ScreenMqttTest(),
 };

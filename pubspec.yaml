@@ -27,6 +27,8 @@ dependencies:
   mobile_scanner: ^6.0.2
   vibration: ^2.0.1
   web_socket_channel: ^3.0.1
+  http: ^1.2.2
+  pub_semver: ^2.1.5
 
 dev_dependencies:
   flutter_test:

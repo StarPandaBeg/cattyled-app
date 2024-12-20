@@ -46,6 +46,16 @@ class LampSettingsIpEvent extends LampSettingsEvent {
   }
 }
 
+class LampSettingsServerEvent extends LampSettingsEvent {
+  final String server;
+
+  LampSettingsServerEvent({required this.server});
+
+  factory LampSettingsServerEvent.fromList(List<String> values) {
+    return LampSettingsServerEvent(server: values[0]);
+  }
+}
+
 class LampSettingsMqttEvent extends LampSettingsEvent {
   final bool enabled;
   final String host;
@@ -131,6 +141,10 @@ class LampSettingsState {
 
   final String firmwareVersion;
   final String fsVersion;
+  final String updateServer;
+
+  String get remoteFirmwareVersionUrl => "$updateServer/firmware_ver.txt";
+  String get remoteFsVersionUrl => "$updateServer/fs_ver.txt";
 
   LampSettingsState({
     required this.isConnected,
@@ -147,6 +161,7 @@ class LampSettingsState {
     required this.mqttRemoteId,
     required this.firmwareVersion,
     required this.fsVersion,
+    required this.updateServer,
     this.mqttUser,
     this.mqttPassword,
   });
@@ -168,6 +183,7 @@ class LampSettingsState {
     String? mqttRemoteId,
     String? firmwareVersion,
     String? fsVersion,
+    String? updateServer,
   }) {
     return LampSettingsState(
       isConnected: isConnected ?? this.isConnected,
@@ -186,6 +202,7 @@ class LampSettingsState {
       mqttRemoteId: mqttRemoteId ?? this.mqttRemoteId,
       firmwareVersion: firmwareVersion ?? this.firmwareVersion,
       fsVersion: fsVersion ?? this.fsVersion,
+      updateServer: updateServer ?? this.updateServer,
     );
   }
 
@@ -205,6 +222,7 @@ class LampSettingsState {
       mqttRemoteId: "",
       firmwareVersion: "",
       fsVersion: "",
+      updateServer: "",
     );
   }
 }
@@ -336,6 +354,16 @@ class LampSettingsBloc extends Bloc<LampSettingsEvent, LampSettingsState> {
         );
       },
     );
+    on<LampSettingsServerEvent>(
+      (event, emit) {
+        emit(
+          state.copyWith(
+            updateServer: event.server,
+            isSynced: true,
+          ),
+        );
+      },
+    );
   }
 
   void _setupPeriodicUpdate() {
@@ -393,6 +421,7 @@ class LampSettingsBloc extends Bloc<LampSettingsEvent, LampSettingsState> {
     add(LampSettingsCommandEvent(CommandWifiRequest()));
     add(LampSettingsCommandEvent(CommandIpRequest()));
     add(LampSettingsCommandEvent(CommandVersionRequest()));
+    add(LampSettingsCommandEvent(CommandUpdateServerRequest()));
 
     // UNUSED
     // add(LampSettingsCommandEvent(CommandMqttRequest()));
@@ -436,6 +465,7 @@ class _CommandParser {
       -8 => LampSettingsVersionEvent.fromList(args),
       -18 => LampSettingsIpEvent.fromList(args),
       -20 => LampSettingsIdEvent.fromList(args),
+      -22 => LampSettingsServerEvent.fromList(args),
       _ => null,
     };
   }
