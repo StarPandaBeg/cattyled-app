@@ -18,8 +18,8 @@ class ScreenSettings extends StatelessWidget {
       "route": "/settings/sync",
     },
     {
-      "icon": Icons.update,
-      "name": "Обновления",
+      "icon": Icons.settings,
+      "name": "Приложение",
       "route": "/settings/updates",
     },
   ];
@@ -48,12 +48,7 @@ class ScreenSettings extends StatelessWidget {
                 },
               ),
             ),
-          ),
-          _SettingsListEntry(
-            icon: Icons.settings,
-            title: "Приложение",
-            onTap: () {},
-          ),
+          )
         ],
       ),
     );

@@ -72,5 +72,8 @@ ThemeData appTheme() {
         ),
       ),
     ),
+    dialogTheme: const DialogTheme(
+      titleTextStyle: TextStyle(color: Colors.white, fontSize: 24),
+    ),
   );
 }

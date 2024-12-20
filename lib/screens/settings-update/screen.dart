@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:cattyled_app/config/loader.dart';
 import 'package:cattyled_app/screens/settings-update/widgets/button_check_updates.dart';
 import 'package:cattyled_app/screens/settings/widgets/header.dart';
 import 'package:cattyled_app/store/lamp_settings/store.dart';
@@ -15,7 +18,7 @@ class ScreenSettingsUpdate extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const PageHeader(header: "Обновление"),
+          const PageHeader(header: "Приложение"),
           BlocProvider(
             create: (_) => LampSettingsBloc(),
             child: Expanded(
@@ -45,6 +48,13 @@ class ScreenSettingsUpdate extends StatelessWidget {
                           state.isConnected && state.isSynced,
                     ),
                     const ButtonCheckUpdates(),
+                    TextButton(
+                      onPressed: () => _showClearConfirm(context),
+                      child: const Text(
+                        "Отключить лампу",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -53,6 +63,50 @@ class ScreenSettingsUpdate extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _showClearConfirm(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Вы уверены?'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Это действие приведёт к отключению приложения от лампы'),
+                SizedBox(height: 10),
+                Text(
+                  'После этого Вам придётся заново зайти в приложение и отсканировать код для подключения',
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Отмена'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              onPressed: _clearDataAndExit,
+              child: const Text(
+                'Продолжить',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _clearDataAndExit() async {
+    final loader = ConfigLoader();
+    await loader.clear();
+    exit(0);
   }
 }
 
