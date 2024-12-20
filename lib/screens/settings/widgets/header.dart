@@ -25,7 +25,7 @@ class PageHeader extends StatelessWidget {
             ),
           ),
           Text(header, style: theme.textTheme.headlineMedium),
-          const SizedBox(width: 32),
+          const SizedBox(width: 48),
         ],
       ),
     );
