@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class PageHeader extends StatelessWidget {
   final String header;
+  final bool enableBack;
 
-  const PageHeader({super.key, required this.header});
+  const PageHeader({super.key, required this.header, this.enableBack = true});
 
   @override
   Widget build(BuildContext context) {
@@ -15,15 +16,17 @@ class PageHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(
-              Icons.arrow_back,
-              color: colorScheme.secondary,
-            ),
-          ),
+          enableBack
+              ? IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: colorScheme.secondary,
+                  ),
+                )
+              : const SizedBox(width: 48),
           Text(header, style: theme.textTheme.headlineMedium),
           const SizedBox(width: 48),
         ],

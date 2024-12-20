@@ -42,6 +42,10 @@ Uint8Buffer buildCommand(List<dynamic> args) {
 
 List<String> parseCommand(Uint8Buffer payload) {
   final command = String.fromCharCodes(payload);
+  return parseCommandFromString(command);
+}
+
+List<String> parseCommandFromString(String command) {
   if (!command.startsWith("CATL:")) return [];
   return command.substring(5).split(",");
 }
