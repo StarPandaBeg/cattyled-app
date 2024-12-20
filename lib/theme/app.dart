@@ -51,5 +51,26 @@ ThemeData appTheme() {
       filled: true,
       border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
     ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.resolveWith<Color>(
+          (states) {
+            if (states.contains(WidgetState.pressed)) {
+              return const Color(0xFF0058A4);
+            }
+            return const Color(0xff008aff);
+          },
+        ),
+        foregroundColor: const WidgetStatePropertyAll(Colors.white),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        ),
+      ),
+    ),
   );
 }

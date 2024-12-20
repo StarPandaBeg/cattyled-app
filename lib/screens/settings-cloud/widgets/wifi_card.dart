@@ -41,9 +41,6 @@ class _CardWifiFormState extends State<CardWifiForm> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Card(
       child: SizedBox(
         width: double.infinity,
@@ -74,20 +71,6 @@ class _CardWifiFormState extends State<CardWifiForm> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () => _onFormSubmit(context),
-                        style: ButtonStyle(
-                          alignment: Alignment.center,
-                          backgroundColor:
-                              WidgetStatePropertyAll(colorScheme.primary),
-                          foregroundColor:
-                              WidgetStatePropertyAll(colorScheme.secondary),
-                          shape:
-                              WidgetStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              side: BorderSide.none,
-                            ),
-                          ),
-                        ),
                         child: const SizedBox(
                           child: Text("Изменить"),
                         ),
