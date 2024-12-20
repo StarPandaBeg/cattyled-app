@@ -38,7 +38,10 @@ class ScreenSettingsCloud extends StatelessWidget {
                           Card(
                             clipBehavior: Clip.hardEdge,
                             child: QrImageView(
-                              data: stringifyData(state, invertIds: true),
+                              data: stringifyData(
+                                QueryData.fromLampState(state),
+                                invertIds: true,
+                              ),
                               size: 300,
                               backgroundColor: Colors.white,
                             ),
