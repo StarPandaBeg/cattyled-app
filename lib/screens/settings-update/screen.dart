@@ -1,3 +1,4 @@
+import 'package:cattyled_app/screens/settings-update/widgets/button_check_updates.dart';
 import 'package:cattyled_app/screens/settings/widgets/header.dart';
 import 'package:cattyled_app/store/lamp_settings/store.dart';
 import 'package:cattyled_app/widgets/text_animated.dart';
@@ -17,9 +18,35 @@ class ScreenSettingsUpdate extends StatelessWidget {
           const PageHeader(header: "Обновление"),
           BlocProvider(
             create: (_) => LampSettingsBloc(),
-            child: const Expanded(
-              child: Column(
-                children: [_CardInfo()],
+            child: Expanded(
+              child: BlocBuilder<LampSettingsBloc, LampSettingsState>(
+                buildWhen: (previous, current) {
+                  if (previous.isConnected != current.isConnected) return true;
+                  if (previous.isSynced != current.isSynced) return true;
+                  if (previous.firmwareVersion != current.firmwareVersion) {
+                    return true;
+                  }
+                  if (previous.fsVersion != current.fsVersion) return true;
+                  return false;
+                },
+                builder: (context, state) => Column(
+                  children: [
+                    _CardFirmware(
+                      version: (state.isConnected && state.isSynced)
+                          ? state.firmwareVersion
+                          : "Загрузка...",
+                      versionAnimationKey: state.isConnected && state.isSynced,
+                    ),
+                    _CardInfo(
+                      fsVersion: (state.isConnected && state.isSynced)
+                          ? state.fsVersion
+                          : "Загрузка...",
+                      fsVersionAnimationKey:
+                          state.isConnected && state.isSynced,
+                    ),
+                    const ButtonCheckUpdates(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -29,70 +56,87 @@ class ScreenSettingsUpdate extends StatelessWidget {
   }
 }
 
-class _CardInfo extends StatelessWidget {
-  const _CardInfo();
+class _CardFirmware extends StatelessWidget {
+  final String version;
+  final dynamic versionAnimationKey;
+
+  const _CardFirmware({
+    required this.version,
+    required this.versionAnimationKey,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Card(
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+          child: Column(
+            children: [
+              SizedBox(
+                width: 256,
+                height: 192,
+                child: Image.asset("assets/images/logo.png"),
+              ),
+              Text(
+                "CattyLED",
+                style: textTheme.headlineLarge,
+              ),
+              const SizedBox(height: 10),
+              TextAnimated(version, versionAnimationKey)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CardInfo extends StatelessWidget {
+  final String fsVersion;
+  final dynamic fsVersionAnimationKey;
+
+  const _CardInfo({
+    required this.fsVersion,
+    required this.fsVersionAnimationKey,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      child: SizedBox(
+        width: double.infinity,
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: BlocBuilder<LampSettingsBloc, LampSettingsState>(
-            buildWhen: (previous, current) {
-              if (previous.isConnected != current.isConnected) return true;
-              if (previous.isSynced != current.isSynced) return true;
-              if (previous.firmwareVersion != current.firmwareVersion) {
-                return true;
-              }
-              if (previous.fsVersion != current.fsVersion) return true;
-              return false;
-            },
-            builder: (context, state) => Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Версия прошивки:"),
-                    TextAnimated(
-                      (state.isConnected && state.isSynced)
-                          ? state.firmwareVersion
-                          : "Обновление...",
-                      state.isConnected && state.isSynced,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Версия файловой системы:"),
-                    TextAnimated(
-                      (state.isConnected && state.isSynced)
-                          ? state.fsVersion
-                          : "Обновление...",
-                      state.isConnected && state.isSynced,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Версия приложения:"),
-                    FutureBuilder<String>(
-                      future: _getAppVersion(),
-                      builder: (context, snapshot) {
-                        String text = snapshot.data ?? "Обновление...";
-                        return TextAnimated(
-                          text,
-                          text,
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text("Версия файловой системы:"),
+                  TextAnimated(fsVersion, fsVersionAnimationKey),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text("Версия приложения:"),
+                  FutureBuilder<String>(
+                    future: _getAppVersion(),
+                    builder: (context, snapshot) {
+                      String text = snapshot.data ?? "Загрузка...";
+                      return TextAnimated(text, text);
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
