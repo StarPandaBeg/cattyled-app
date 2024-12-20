@@ -13,84 +13,87 @@ class ScreenMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const PageHeader(),
-          const SizedBox(
-            height: 40,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 60),
-              child: LampIndicator(
-                colorA: Colors.blue[800]!,
-                colorB: Colors.blue[800]!,
+    return BlocProvider(
+      create: (_) => LampBloc(),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const PageHeader(),
+            const SizedBox(
+              height: 40,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 60),
+                child: LampIndicator(
+                  colorA: Colors.blue[800]!,
+                  colorB: Colors.blue[800]!,
+                ),
               ),
             ),
-          ),
-          const SizedBox(
-            height: 40,
-          ),
-          Column(
-            children: [
-              SizedBox(
-                height: 170,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: BlocBuilder<LampBloc, LampState>(
+            const SizedBox(
+              height: 40,
+            ),
+            Column(
+              children: [
+                SizedBox(
+                  height: 170,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: BlocBuilder<LampBloc, LampState>(
+                          buildWhen: (previous, current) {
+                            if (previous.isSynced != current.isSynced) {
+                              return true;
+                            }
+                            if (previous.brightness != current.brightness) {
+                              return true;
+                            }
+                            return false;
+                          },
+                          builder: (context, state) => DebouncedBrightnessSlider(
+                            disabled: !state.isSynced,
+                            initial: state.brightness.toDouble(),
+                            onChange: (value) {
+                              final store = context.read<LampBloc>();
+                              store.add(
+                                LampCommandEvent(
+                                  CommandBrightness(brightness: value.toInt()),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      BlocBuilder<LampBloc, LampState>(
                         buildWhen: (previous, current) {
                           if (previous.isSynced != current.isSynced) {
                             return true;
                           }
-                          if (previous.brightness != current.brightness) {
-                            return true;
-                          }
+                          if (previous.mode != current.mode) return true;
                           return false;
                         },
-                        builder: (context, state) => DebouncedBrightnessSlider(
-                          disabled: !state.isSynced,
-                          initial: state.brightness.toDouble(),
-                          onChange: (value) {
-                            final store = context.read<LampBloc>();
-                            store.add(
-                              LampCommandEvent(
-                                CommandBrightness(brightness: value.toInt()),
-                              ),
-                            );
-                          },
+                        builder: (context, state) => Expanded(
+                          flex: 4,
+                          child: ModeSelect(
+                            mode: state.mode,
+                            onTap: state.isSynced
+                                ? () => _onModeChangeTap(context, state.mode)
+                                : null,
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    BlocBuilder<LampBloc, LampState>(
-                      buildWhen: (previous, current) {
-                        if (previous.isSynced != current.isSynced) {
-                          return true;
-                        }
-                        if (previous.mode != current.mode) return true;
-                        return false;
-                      },
-                      builder: (context, state) => Expanded(
-                        flex: 4,
-                        child: ModeSelect(
-                          mode: state.mode,
-                          onTap: state.isSynced
-                              ? () => _onModeChangeTap(context, state.mode)
-                              : null,
-                        ),
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              const StatusBar(),
-            ],
-          ),
-        ],
+                const SizedBox(height: 10),
+                const StatusBar(),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

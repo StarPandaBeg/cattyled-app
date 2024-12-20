@@ -1,9 +1,7 @@
 import 'package:cattyled_app/routes.dart';
-import 'package:cattyled_app/store/lamp/store.dart';
 import 'package:cattyled_app/theme/app.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
 final appLogger = Logger("Application");
@@ -42,12 +40,9 @@ class MyApp extends StatelessWidget {
         return MaterialPageRoute(
           builder: (context) => Scaffold(
             body: SafeArea(
-              child: BlocProvider(
-                create: (_) => LampBloc(),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: builder(context),
-                ),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: builder(context),
               ),
             ),
           ),
