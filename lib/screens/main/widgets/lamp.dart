@@ -195,7 +195,6 @@ class _LampPainter extends CustomPainter {
       LampMode.pulse => _pulseColorShader(bounds),
       LampMode.fire => _fireColorShader(bounds),
       LampMode.lights => _lightsColorShader(bounds),
-      _ => null,
     };
   }
 
