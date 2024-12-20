@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:async/async.dart';
 import 'package:cattyled_app/api/client.dart';
 import 'package:cattyled_app/config/config.dart';
-import 'package:cattyled_app/providers/config.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mqtt_client/mqtt_client.dart' show MqttPublishMessage;
 import 'package:typed_data/typed_data.dart';
 
@@ -27,8 +25,8 @@ class MqttRepository {
   Stream<Uint8Buffer> get messages =>
       StreamGroup.mergeBroadcast([localMessages, remoteMessages]);
 
-  MqttRepository() {
-    _config = GetIt.instance<ConfigProvider>().config;
+  MqttRepository(Config config) {
+    _config = config;
     _client = MqttClient(_config);
   }
 

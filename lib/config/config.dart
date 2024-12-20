@@ -1,3 +1,5 @@
+import 'package:cattyled_app/util/qr_data.dart';
+
 class Config {
   final String mqttHost;
   final int mqttPort;
@@ -5,16 +7,16 @@ class Config {
   final String? mqttUser;
   final String? mqttPassword;
 
-  final String lampId;
+  final String lampPrefix;
   final String lampLocalName;
   final String lampRemoteName;
 
-  String get localTopic => "/$lampId/CattyLED_/$lampLocalName";
-  String get remoteTopic => "/$lampId/CattyLED_/$lampRemoteName";
+  String get localTopic => "$lampPrefix$lampLocalName";
+  String get remoteTopic => "$lampPrefix$lampRemoteName";
 
   Config({
     required this.mqttHost,
-    required this.lampId,
+    required this.lampPrefix,
     required this.lampLocalName,
     required this.lampRemoteName,
     this.mqttPort = 1883,
@@ -26,9 +28,22 @@ class Config {
   factory Config.placeholder() {
     return Config(
       mqttHost: "",
-      lampId: "",
+      lampPrefix: "",
       lampLocalName: "",
       lampRemoteName: "",
+    );
+  }
+
+  factory Config.fromQuery(QueryData data) {
+    return Config(
+      mqttHost: data.mqttHost,
+      mqttPort: data.mqttPort,
+      lampPrefix: data.mqttPrefix,
+      lampLocalName: data.mqttLocalId,
+      lampRemoteName: data.mqttRemoteId,
+      mqttUseCredentials: data.mqttHasCreds,
+      mqttUser: data.mqttUser,
+      mqttPassword: data.mqttPassword,
     );
   }
 }

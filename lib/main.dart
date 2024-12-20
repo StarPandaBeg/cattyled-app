@@ -1,4 +1,3 @@
-import 'package:cattyled_app/providers/index.dart';
 import 'package:cattyled_app/routes.dart';
 import 'package:cattyled_app/store/lamp/store.dart';
 import 'package:cattyled_app/theme/app.dart';
@@ -22,7 +21,6 @@ void setupLogging() {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupLogging();
-  await setup();
 
   appLogger.info("Setup complete. Running app");
   runApp(const MyApp());
@@ -37,7 +35,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Твой кот',
       theme: appTheme(),
-      initialRoute: "/mqtt-test",
+      initialRoute: "/splash",
       onGenerateRoute: (settings) {
         final builder = routes[settings.name];
         if (builder == null) return null;
