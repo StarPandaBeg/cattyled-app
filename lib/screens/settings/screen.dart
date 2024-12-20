@@ -48,7 +48,8 @@ class ScreenSettings extends StatelessWidget {
                 },
               ),
             ),
-          )
+          ),
+          const Text("by stpnd"),
         ],
       ),
     );
