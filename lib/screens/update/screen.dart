@@ -229,7 +229,7 @@ class _ScreenUpdateState extends State<ScreenUpdate> {
             TextButton(
               child: const Text('Вперёд'),
               onPressed: () {
-                Navigator.popUntil(context, (_) => true);
+                Navigator.popUntil(context, (_) => false);
                 Navigator.pushReplacementNamed(context, "/splash");
               },
             ),
