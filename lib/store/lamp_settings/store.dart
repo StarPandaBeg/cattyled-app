@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cattyled_app/repository/connection.dart';
 import 'package:cattyled_app/repository/mqtt.dart';
 import 'package:cattyled_app/store/lamp_settings/commands.dart';
+import 'package:cattyled_app/util/util.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
@@ -403,7 +404,7 @@ class _CommandParser {
   static final logger = Logger("CommandParser");
 
   LampSettingsEvent? mapLocalCommandToEvent(Uint8Buffer payload) {
-    final data = _getArgs(payload);
+    final data = parseCommand(payload);
     if (data.isEmpty) return null;
 
     final type = int.parse(data[0]);
@@ -419,7 +420,7 @@ class _CommandParser {
   }
 
   LampSettingsEvent? mapRemoteCommandToEvent(Uint8Buffer payload) {
-    final data = _getArgs(payload);
+    final data = parseCommand(payload);
     if (data.isEmpty) return null;
 
     final type = int.parse(data[0]);
@@ -437,12 +438,6 @@ class _CommandParser {
       -20 => LampSettingsIdEvent.fromList(args),
       _ => null,
     };
-  }
-
-  List<String> _getArgs(Uint8Buffer payload) {
-    final command = String.fromCharCodes(payload);
-    if (!command.startsWith("CATL:")) return [];
-    return command.substring(5).split(",");
   }
 
   LampSettingsEvent? _mapCommonEvents(int type, List<String> args) {

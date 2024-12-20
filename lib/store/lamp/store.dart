@@ -327,7 +327,7 @@ class _CommandParser {
   static final logger = Logger("CommandParser");
 
   LampEvent? mapLocalCommandToEvent(Uint8Buffer payload) {
-    final data = _getArgs(payload);
+    final data = parseCommand(payload);
     if (data.isEmpty) return null;
 
     final type = int.parse(data[0]);
@@ -343,7 +343,7 @@ class _CommandParser {
   }
 
   LampEvent? mapRemoteCommandToEvent(Uint8Buffer payload) {
-    final data = _getArgs(payload);
+    final data = parseCommand(payload);
     if (data.isEmpty) return null;
 
     final type = int.parse(data[0]);
@@ -359,12 +359,6 @@ class _CommandParser {
       8 => LampStatusEvent.fromList(args),
       _ => null,
     };
-  }
-
-  List<String> _getArgs(Uint8Buffer payload) {
-    final command = String.fromCharCodes(payload);
-    if (!command.startsWith("CATL:")) return [];
-    return command.substring(5).split(",");
   }
 
   LampEvent? _mapCommonEvents(int type, List<String> args) {
