@@ -22,13 +22,20 @@ class LampIndicator extends StatelessWidget {
         if (previous.mode != current.mode) return true;
         return false;
       },
-      builder: (context, state) => Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned.fill(child: _LampShadow(state: state)),
-          _Lamp(state: state),
-          Image.asset("assets/images/eyes.png"),
-        ],
+      builder: (context, state) => GestureDetector(
+        onDoubleTap: () {
+          final store = context.read<LampBloc>();
+          if (!store.state.isConnected) return;
+          store.add(LampCommandEvent(CommandWink()));
+        },
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned.fill(child: _LampShadow(state: state)),
+            _Lamp(state: state),
+            Image.asset("assets/images/eyes.png"),
+          ],
+        ),
       ),
     );
   }
