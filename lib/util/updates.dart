@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 Future<Version> fetchVersion(String url) async {
@@ -69,4 +71,26 @@ Future<String?> findAvailableIp(String ip) async {
     await Future.wait(batch);
   }
   return completer.isCompleted ? completer.future : null;
+}
+
+Future<bool> checkAppUpdates() async {
+  try {
+    const url = String.fromEnvironment("UPDATE_URL");
+    final remoteVersion = await fetchVersion("$url/ver.txt");
+    final localVersion = await getAppVersion();
+    return (remoteVersion > Version.parse(localVersion));
+  } catch (e) {
+    return false;
+  }
+}
+
+Future<String> getAppVersion() async {
+  final packageInfo = await PackageInfo.fromPlatform();
+  return packageInfo.version;
+}
+
+Future<bool> gotoAppUpdates() async {
+  const urlBase = String.fromEnvironment("UPDATE_URL");
+  final url = Uri.parse("$urlBase/app.apk");
+  return await launchUrl(url);
 }

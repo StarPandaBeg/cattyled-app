@@ -5,6 +5,7 @@ import 'package:cattyled_app/screens/main/widgets/mode_select.dart';
 import 'package:cattyled_app/screens/main/widgets/mode_sheet.dart';
 import 'package:cattyled_app/screens/main/widgets/status_bar.dart';
 import 'package:cattyled_app/store/lamp/store.dart';
+import 'package:cattyled_app/widgets/update_check.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -37,6 +38,7 @@ class ScreenMain extends StatelessWidget {
             ),
             Column(
               children: [
+                const UpdateChecker(),
                 SizedBox(
                   height: 170,
                   child: Row(
@@ -52,7 +54,8 @@ class ScreenMain extends StatelessWidget {
                             }
                             return false;
                           },
-                          builder: (context, state) => DebouncedBrightnessSlider(
+                          builder: (context, state) =>
+                              DebouncedBrightnessSlider(
                             disabled: !state.isSynced,
                             initial: state.brightness.toDouble(),
                             onChange: (value) {

@@ -4,10 +4,10 @@ import 'package:cattyled_app/config/loader.dart';
 import 'package:cattyled_app/screens/settings-update/widgets/button_check_updates.dart';
 import 'package:cattyled_app/screens/settings/widgets/header.dart';
 import 'package:cattyled_app/store/lamp_settings/store.dart';
+import 'package:cattyled_app/util/updates.dart';
 import 'package:cattyled_app/widgets/text_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 class ScreenSettingsUpdate extends StatelessWidget {
   const ScreenSettingsUpdate({super.key});
@@ -182,7 +182,7 @@ class _CardInfo extends StatelessWidget {
                 children: [
                   const Text("Версия приложения:"),
                   FutureBuilder<String>(
-                    future: _getAppVersion(),
+                    future: getAppVersion(),
                     builder: (context, snapshot) {
                       String text = snapshot.data ?? "Загрузка...";
                       return TextAnimated(text, text);
@@ -195,10 +195,5 @@ class _CardInfo extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future<String> _getAppVersion() async {
-    final packageInfo = await PackageInfo.fromPlatform();
-    return packageInfo.version;
   }
 }
