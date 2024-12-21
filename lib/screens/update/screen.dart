@@ -67,12 +67,12 @@ class _ScreenUpdateState extends State<ScreenUpdate> {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
+                    _ProgressBar(label: "Обновление файлов", value: _fsValue),
+                    const SizedBox(height: 20),
                     _ProgressBar(
                       label: "Обновление прошивки",
                       value: _firmwareValue,
                     ),
-                    const SizedBox(height: 20),
-                    _ProgressBar(label: "Обновление файлов", value: _fsValue)
                   ],
                 ),
               ),
