@@ -74,7 +74,7 @@ class _ButtonCheckUpdatesState extends State<ButtonCheckUpdates> {
   Future<bool> _checkUpdates(LampSettingsState state) async {
     final remoteFirmwareVersion =
         await fetchVersion(state.remoteFirmwareVersionUrl);
-    final remoteFsVersion = await fetchVersion(state.remoteFirmwareVersionUrl);
+    final remoteFsVersion = await fetchVersion(state.remoteFsVersionUrl);
 
     final localFirmwareVersion = Version.parse(state.firmwareVersion);
     final localFsVersion = Version.parse(state.fsVersion);
