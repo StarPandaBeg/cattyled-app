@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:cattyled_app/config/loader.dart';
 import 'package:cattyled_app/screens/splash-check/check.dart';
 import 'package:cattyled_app/screens/update/screen.dart';
+import 'package:cattyled_app/util/qr_data.dart';
 import 'package:cattyled_app/widgets/logo_animated.dart';
 import 'package:flutter/material.dart';
 
@@ -14,11 +16,15 @@ class ScreenSplashCheck extends StatefulWidget {
 
 class _ScreenSplashCheckState extends State<ScreenSplashCheck> {
   final checker = LampChecker();
+  final ConfigLoader _loader = ConfigLoader();
+
+  Config _config = Config.placeholder();
 
   @override
   void initState() {
     super.initState();
 
+    cleanConfig();
     checker.addListener(_onCheckStatus);
     checker.run();
   }
@@ -118,16 +124,23 @@ class _ScreenSplashCheckState extends State<ScreenSplashCheck> {
     );
   }
 
-  void _onCheckStatus() {
+  void _onCheckStatus() async {
     if (!checker.isOk) {
       _showError(checker.lastError);
       return;
     }
 
+    await _loader.save(QueryData.fromConfig(_config));
     if (checker.needUpdate) {
       _showUpdateAlert(checker.foundIp);
       return;
     }
     Navigator.pushNamedAndRemoveUntil(context, "/splash", (route) => false);
+  }
+
+  void cleanConfig() async {
+    await _loader.load();
+    _config = _loader.config;
+    await _loader.clear();
   }
 }
