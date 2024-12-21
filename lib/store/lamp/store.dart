@@ -175,8 +175,8 @@ class LampBloc extends Bloc<LampEvent, LampState> {
   Timer? _periodicTimer;
   DateTime _lastUpdateTime = DateTime.now();
 
-  LampBloc() : super(LampState.initial()) {
-    _mqttRepo = GetIt.instance<MqttRepository>();
+  LampBloc({MqttRepository? mqttRepo}) : super(LampState.initial()) {
+    _mqttRepo = mqttRepo ?? GetIt.instance<MqttRepository>();
 
     _setupNativeConnectionListener();
     _setupActualConnectionListener();
