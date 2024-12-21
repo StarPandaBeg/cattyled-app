@@ -44,3 +44,5 @@ app.*.map.json
 
 .env*
 !.env.example
+
+keystore/**
