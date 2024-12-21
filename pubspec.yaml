@@ -29,6 +29,7 @@ dependencies:
   web_socket_channel: ^3.0.1
   http: ^1.2.2
   pub_semver: ^2.1.5
+  network_info_plus: ^6.1.2
 
 dev_dependencies:
   flutter_test:

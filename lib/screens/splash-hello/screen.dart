@@ -107,6 +107,6 @@ class _ScreenSplashHelloState extends State<ScreenSplashHello> {
     loader.save(data);
 
     if (!mounted) return;
-    Navigator.popAndPushNamed(context, "/splash");
+    Navigator.popAndPushNamed(context, "/splash/check");
   }
 }
