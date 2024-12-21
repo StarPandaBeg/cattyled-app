@@ -2,6 +2,7 @@ import 'package:cattyled_app/screens/settings/widgets/header.dart';
 import 'package:cattyled_app/store/lamp_settings/store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vibration/vibration.dart';
 
 class ScreenSettings extends StatelessWidget {
   const ScreenSettings({super.key});
@@ -49,7 +50,14 @@ class ScreenSettings extends StatelessWidget {
               ),
             ),
           ),
-          const Text("by stpnd"),
+          GestureDetector(
+            onTap: () async {
+              if (await Vibration.hasVibrator() == true) {
+                Vibration.vibrate(duration: 50);
+              }
+            },
+            child: const Text("by stpnd"),
+          ),
         ],
       ),
     );
